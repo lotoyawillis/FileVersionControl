@@ -4,9 +4,10 @@ import com.fileversioncontrol.fileversioncontrolmanager.commit.VersionManager;
 import com.fileversioncontrol.fileversioncontrolmanager.restore.RestoreManager;
 
 public class FileVersionControlManagerService {
-    public static void commitFiles(String path){
+    public static boolean commitFiles(String path){
         // String path = "C:\\Users\\lotlo\\OneDrive\\Documents\\test5";
-        VersionManager.Commit(path);
+        return VersionManager.Commit(path);
+
     }
 
     public static void restoreFiles(String[] body){

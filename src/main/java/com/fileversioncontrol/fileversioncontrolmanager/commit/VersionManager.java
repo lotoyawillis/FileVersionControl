@@ -9,72 +9,76 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.PatternSyntaxException;
 
 
 public class VersionManager {
-    public static void commit(String path) {
-        String vcPath = path + "\\.vc";
+    public static boolean commit(String path) {
+        String vcPath = pathUtilities.pathBuilder(path, ".vc");
+
+        boolean successfulCommit;
 
         // Checks if the .vc directory exists
         if (directoryUtilities.isDirectory(vcPath)) {
-            commitDirectory(vcPath, path);
+            successfulCommit = commitFiles(vcPath, path);
         } else {
             directoryUtilities.createDirectory(vcPath, ".vc");
-            commitDirectory(vcPath, path);
+            successfulCommit = commitFiles(vcPath, path);
         }
+        return successfulCommit;
     }
 
-    public static void commitDirectory(String directoryPath, String originalDirectoryPath) {
-        commitFiles(directoryPath, originalDirectoryPath);
+    /*
+    public static boolean commitDirectory(String directoryPath, String originalDirectoryPath) {
+        return commitFiles(directoryPath, originalDirectoryPath);
     }
+    */
 
-    public static void commitFiles(String directoryPath, String originalDirectoryPath) {
+    public static boolean commitFiles(String directoryPath, String originalDirectoryPath) {
         int versionNumber = 1;
-        String vcDirectoryPath = directoryPath + "\\" + versionNumber;
+        String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
         while (directoryUtilities.isDirectory(vcDirectoryPath)) {
             versionNumber = versionNumber + 1;
-            vcDirectoryPath = directoryPath + "\\" + versionNumber;
+            vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
         }
 
         directoryUtilities.createDirectory(vcDirectoryPath, Integer.toString(versionNumber));
-        copyFiles(vcDirectoryPath, originalDirectoryPath);
+        return copyAllFiles(vcDirectoryPath, originalDirectoryPath);
     }
 
-    public static void copyFiles(String vcDirectoryPath, String originalDirectoryPath) {
+    public static boolean copyAllFiles(String vcDirectoryPath, String originalDirectoryPath) {
         List<String> allPaths = pathUtilities.getAllPathsInOneLayer(originalDirectoryPath);
-        try {
-            for (String path : allPaths) {
-                if (directoryUtilities.isDirectory(path)) {
-                    String[] splitPath = path.split("\\\\");
-                    String directoryName = splitPath[splitPath.length - 1];
-                    String directoryPath = vcDirectoryPath + "\\" + directoryName;
 
-                    if (!directoryName.equals(".vc")) {
-                        directoryUtilities.createDirectory(directoryPath, directoryName);
-                        copyFiles(directoryPath, path);
-                    }
-                } else if (fileUtilities.isFile(path)) {
-                    String[] splitPath = path.split("\\\\");
-                    String fileName = splitPath[splitPath.length - 1];
-                    String destinationPathString = vcDirectoryPath + "\\" + fileName;
+        for (String path : allPaths) {
+            if (directoryUtilities.isDirectory(path)) {
+                String directoryName = pathUtilities.name(path);
+                String directoryPath = pathUtilities.pathBuilder(vcDirectoryPath, directoryName);
 
-                    Path sourcePath = Paths.get(path);
-                    Path destinationPath = Paths.get(destinationPathString);
+                if (!directoryName.equals(".vc")) {
+                    directoryUtilities.createDirectory(directoryPath, directoryName);
+                    copyAllFiles(directoryPath, path);
+                }
+            } else if (fileUtilities.isFile(path)) {
+                String fileName = pathUtilities.name(path);
+                String destinationPathString = pathUtilities.pathBuilder(vcDirectoryPath, fileName);
 
-                    try {
-                        Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                    } catch (IOException e) {
-                        System.out.println(e.getMessage());
-                    }
+                Path sourcePath = Paths.get(path);
+                Path destinationPath = Paths.get(destinationPathString);
+
+                try {
+                    Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage()); // No one will see this
+                    return false;
                 }
             }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
         }
+        return true;
     }
 
-    public static void Commit(String path) {
+    public static boolean Commit(String path) {
         // Enter a path to a directory
         // If it does not exist, create a .vc directory
         // If .vc does exist, create a directory with a new version number
@@ -82,9 +86,29 @@ public class VersionManager {
 
         // path = "C:\\Users\\lotlo\\OneDrive\\Documents\\test1";
 
+        boolean successfulCommit = false;
+
         // Checks the directory path to make sure it exists
         if (directoryUtilities.isDirectory(path)) {
-            commit(path);
+            return commit(path);
+        }
+        else {
+            return successfulCommit;
         }
     }
+
+    /*
+    public static void main(String[] args) {
+        String path = "C:/Users/lotlo/OneDrive/Documents/test2/";
+        ArrayList<String> empty = new ArrayList<>();
+
+        ArrayList<String> paths = pathUtilities.getAllFilePaths(path, empty);
+
+        for (String p : paths)
+        {
+            System.out.println(p);
+        }
+
+    }
+    */
 }

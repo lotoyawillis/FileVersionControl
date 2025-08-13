@@ -2,6 +2,7 @@ package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
 import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -27,7 +28,17 @@ public class RestoreManager {
             if (destinationMap.get(vcEntry.getKey()) == null) {
                 File file = vcEntry.getValue();
                 String filePath = file.getAbsolutePath();
-                String originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+
+                String originalPath;
+                String delimiter = pathUtilities.splitCharacterHelper(filePath);
+                if (delimiter.equals("\\")) {
+                    originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+                }
+                else {
+                    originalPath = filePath.replaceAll("\\/.vc\\/\\d", "");
+                }
+
+                // String originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
                 verifyPathExists(originalPath);
 
                 Path vcPath = Paths.get(filePath);
@@ -43,21 +54,44 @@ public class RestoreManager {
     }
 
     public static void verifyPathExists(String path) {
-        String[] splitPath = path.split("\\\\");
-        String partialPath = splitPath[0] + "\\" + splitPath[1];
+        String[] splitPath;
+        String partialPath;
+
+        String delimiter = pathUtilities.splitCharacterHelper(path);
+        if (delimiter.equals("\\")) {
+            splitPath = path.split("\\\\");
+            partialPath = pathUtilities.pathBuilder(splitPath[0], splitPath[1]);
+        }
+        else {
+            splitPath = path.split("\\/");
+            partialPath = pathUtilities.pathBuilder(splitPath[0], splitPath[1]);
+        }
+        // String[] splitPath = path.split("\\\\");
+        // String partialPath = splitPath[0] + "\\" + splitPath[1];
 
         ArrayList<String> list = new ArrayList<>(Arrays.asList(splitPath));
         list.remove(splitPath[0]);
         list.remove(splitPath[1]);
-        list.remove(splitPath[splitPath.length - 1]);
+        list.remove(splitPath[splitPath.length - 1]); // Erase the filename from the path
 
         splitPath = list.toArray(new String[0]);
 
         for (String piece : splitPath) {
-            partialPath = partialPath + "\\" + piece;
+            // partialPath = partialPath + "\\" + piece;
+            partialPath = pathUtilities.pathBuilder(partialPath, piece);
             if (!directoryUtilities.isDirectory(partialPath)) {
-                String[] splitPartialPath = partialPath.split("\\\\");
-                directoryUtilities.createDirectory(partialPath, splitPartialPath[splitPartialPath.length - 1]);
+                // String[] splitPartialPath = partialPath.split("\\\\");
+                /*
+                String[] splitPartialPath;
+                if (delimiter.equals("\\")) {
+                    splitPartialPath = partialPath.split("\\\\");
+                }
+                else {
+                    splitPartialPath = partialPath.split("\\/");
+                }
+                */
+                //directoryUtilities.createDirectory(partialPath, splitPartialPath[splitPartialPath.length - 1]);
+                directoryUtilities.createDirectory(partialPath, pathUtilities.name(partialPath));
             }
         }
     }

@@ -3,6 +3,7 @@ package com.fileversioncontrol.fileversioncontrolmanager.controller;
 import com.fileversioncontrol.fileversioncontrolmanager.service.FileVersionControlManagerService;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -27,10 +28,19 @@ public class FileVersionControlController {
 
      */
 
-    @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/api/v1/commit")
-    public void postCommitFiles(@RequestBody String path){
-        FileVersionControlManagerService.commitFiles(path);
+    public ResponseEntity<String> postCommitFiles(@RequestBody String path){
+        boolean success = FileVersionControlManagerService.commitFiles(path);
+
+        if (!success)
+        {
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body("All files were not copied");
+        }
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body("All files were copied");
     }
 
     @ResponseStatus(HttpStatus.CREATED)

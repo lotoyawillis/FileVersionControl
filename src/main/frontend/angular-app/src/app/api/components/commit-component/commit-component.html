@@ -1,21 +1,7 @@
 <nav>
   <div>
-    <!--
-    <input class="u-full-width" placeholder="Folder" type="text" [(ngModel)]="folder">
-    <button id="browse" class="button-primary" (click)="browse()">Browse</button>
-    <input id="fileInput" type="file" style="display: none" />
-    -->
-    <label for="inputBox">Enter something:</label>
-    <input class="u-full-width" type="text" id="inputBox" value="Folder" [(ngModel)]="folder" readonly>
-    <input
-      type="file"
-      webkitdirectory=""
-      directory=""
-      (change)="onDirectorySelected($event)"
-      style="display: none"
-      #browse
-    />
-    <button id="updateButton" (click)="browse.click()" value="ngModel">Browse</button>
+    <label for="inputBox">Enter the absolute path of the directory you want to commit:</label>
+    <input class="u-full-width" type="text" id="inputBox" placeholder="Absolute Folder Path">
   </div>
   <div>
     <script>
