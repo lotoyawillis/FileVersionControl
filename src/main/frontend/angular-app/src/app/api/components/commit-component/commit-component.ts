@@ -12,8 +12,11 @@ import {ApiService} from '../../services/api-service';
   providedIn: 'root'
 })
 export class CommitComponent {
-  submit(dir: String) {
-    this.apiService.postCommit(dir).subscribe(
+  constructor(private apiService: ApiService) {
+  }
+
+  submit(directory: String) {
+    this.apiService.postCommit(directory).subscribe(
       (response) => {
         console.log('API Response:', response);
       },
