@@ -29,13 +29,14 @@ public class pathUtilities {
         return emptyList;
     }
 
-    public static ArrayList<String> getAllFilePaths(String originalDirectoryPath, ArrayList<String> filePathsList) {
+    public static List<String> getAllFilePaths(String originalDirectoryPath, List<String> filePathsList) {
         List<String> allPaths = getAllPathsInOneLayer(originalDirectoryPath);
 
         for (String path : allPaths) {
             if (directoryUtilities.isDirectory(path)) {
-                String[] splitPath = path.split("\\\\");
-                String directoryName = splitPath[splitPath.length - 1];
+                // String[] splitPath = path.split("\\\\");
+                // String directoryName = splitPath[splitPath.length - 1];
+                String directoryName = name(path);
 
                 if (!directoryName.equals(".vc")) {
                     getAllFilePaths(path, filePathsList);
@@ -90,20 +91,15 @@ public class pathUtilities {
     }
 
     public static String splitCharacterHelper(String path) {
-        try{
-            String[] splitBackSlashPath = path.split("\\\\");
-            // String[] splitForwardSlashPath = path.split("\\/");
+        //String[] splitBackSlashPath = path.split("\\\\");
+        // String[] splitForwardSlashPath = path.split("\\/");
+        // int index = path.indexOf("\\");
 
-            if (splitBackSlashPath.length > 1) {
-                return "\\";
-            }
-            else {
-                return "/";
-            }
+        if (path.contains("\\")) {
+            return "\\";
         }
-        catch (PatternSyntaxException e)
-        {
-            return "";
+        else {
+            return "/";
         }
     }
 }

@@ -2,15 +2,21 @@ package com.fileversioncontrol.fileversioncontrolmanager.commit;
 
 import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.PatternSyntaxException;
 
 
@@ -18,12 +24,12 @@ public class VersionManager {
     public static boolean commit(String path) {
         String vcPath = pathUtilities.pathBuilder(path, ".vc");
 
-        boolean successfulCommit;
+        boolean successfulCommit = false;
 
         // Checks if the .vc directory exists
-        if (directoryUtilities.isDirectory(vcPath)) {
+        if (directoryUtilities.isDirectory(vcPath) && directoryUtilities.isDirectoryChanged(path)) {                     // maybe include isDirectoryChanged in this check as well
             successfulCommit = commitFiles(vcPath, path);
-        } else {
+        } else if (!directoryUtilities.isDirectory(vcPath)) {
             directoryUtilities.createDirectory(vcPath, ".vc");
             successfulCommit = commitFiles(vcPath, path);
         }
@@ -97,18 +103,44 @@ public class VersionManager {
         }
     }
 
+
     /*
     public static void main(String[] args) {
-        String path = "C:/Users/lotlo/OneDrive/Documents/test2/";
-        ArrayList<String> empty = new ArrayList<>();
+        //String path = "C:/Users/lotlo/OneDrive/Documents/test5/.vc";
+        // String path = "C:\\Users\\lotlo\\OneDrive\\Documents\\commit_test_do_commit";
 
-        ArrayList<String> paths = pathUtilities.getAllFilePaths(path, empty);
+        String path = "C:\\Users\\lotlo\\OneDrive\\Documents\\restore_test";
 
+        // List<String> empty = new ArrayList<>();
+
+        // List<String> paths = pathUtilities.getAllFilePaths(path, empty); // unrelated
+
+        // HashMap<Integer, File> map1 = new HashMap<>();
+        // HashMap<Integer, File> dirHM = hashUtilities.createHashMap(path, map1);
+
+        /*
         for (String p : paths)
         {
             System.out.println(p);
         }
 
+
+        for (Map.Entry<Integer, File> entry : dirHM.entrySet())
+        {
+            System.out.println(entry);
+            System.out.println(entry.getValue().hashCode());
+        }
+
+        // System.out.println(dirHM);
+
+
+        // System.out.println(getLatestVersionNumberDirectory(path));
+        boolean result = Commit(path);
+        System.out.println(result);
+
+
     }
     */
+
+
 }

@@ -1,6 +1,7 @@
 package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
 import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
 
@@ -17,6 +18,78 @@ import java.util.Map;
 
 
 public class RestoreManager {
+    /*
+    public static void restore(String vcSource, String destination) {
+        HashMap<Integer, File> map1 = new HashMap<>();
+        HashMap<Integer, File> map2 = new HashMap<>();
+        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource, map1);
+        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination, map2);
+
+        for (Map.Entry<Integer, File> vcEntry : vcMap.entrySet()) {
+            if (destinationMap.get(vcEntry.getKey()) == null) {
+                File file = vcEntry.getValue();
+                String filePath = file.getAbsolutePath();
+
+                String originalPath;
+                String delimiter = pathUtilities.splitCharacterHelper(filePath);
+                if (delimiter.equals("\\")) {
+                    // originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+                    originalPath = filePath.replaceAll("\\\\[^\\\\]+\\\\.vc\\\\\\d", String.format("\\\\%s", pathUtilities.name(destination)));
+                }
+                else {
+                    // originalPath = filePath.replaceAll("\\/.vc\\/\\d", "");
+                    originalPath = filePath.replaceAll("/[^/]+/.vc/\\d", String.format("\\/%s", pathUtilities.name(destination)));
+                }
+
+                // String originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+                verifyPathExists(originalPath);
+
+                Path vcPath = Paths.get(filePath);
+                Path originalDestinationPath = Paths.get(originalPath);
+
+                try {
+                    Files.copy(vcPath, originalDestinationPath, StandardCopyOption.REPLACE_EXISTING);
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            else {
+                File vcFile = vcEntry.getValue();
+                File destinationFile = destinationMap.get(vcEntry.getKey());
+
+                String vcFileName = pathUtilities.name(vcFile.getAbsolutePath());
+                String destinationFileName = pathUtilities.name(destinationFile.getAbsolutePath());
+
+                if (!vcFileName.equals(destinationFileName)) {
+                    String destinationFilePath = destinationFile.getAbsolutePath();
+
+                    String delimiter = pathUtilities.splitCharacterHelper(destinationFilePath);
+
+                    String filePath = destinationFilePath.replace(String.format("%s%s", delimiter, destinationFileName), String.format("%s%s", delimiter, vcFileName));
+                    while (fileUtilities.isFile(filePath)) {
+                        String[] fileParts = filePath.split("\\.");
+                        String extension = fileParts[fileParts.length - 1];
+                        String filePathWithoutExtension = filePath.substring(0, filePath.length() - (extension.length() + 1));                       // Added one to the length of the extension to account for the "." character
+                        filePath = filePathWithoutExtension + "-Copy." + extension;
+                    }
+
+                    File renameFile = new File(filePath);
+
+                    try {
+                        boolean renameSuccessful = destinationFile.renameTo(renameFile);
+                        if (renameSuccessful) {
+                            System.out.println("Rename was successful");
+                        } else {
+                            System.out.println("Failed to rename file");
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+                }
+            }
+        }
+    }
+    */
 
     public static void restore(String vcSource, String destination) {
         HashMap<String, File> map1 = new HashMap<>();
@@ -32,10 +105,12 @@ public class RestoreManager {
                 String originalPath;
                 String delimiter = pathUtilities.splitCharacterHelper(filePath);
                 if (delimiter.equals("\\")) {
-                    originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+                    // originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
+                    originalPath = filePath.replaceAll("\\\\[^\\\\]+\\\\.vc\\\\\\d", String.format("\\\\%s", pathUtilities.name(destination)));
                 }
                 else {
-                    originalPath = filePath.replaceAll("\\/.vc\\/\\d", "");
+                    // originalPath = filePath.replaceAll("\\/.vc\\/\\d", "");
+                    originalPath = filePath.replaceAll("/[^/]+/.vc/\\d", String.format("\\/%s", pathUtilities.name(destination)));
                 }
 
                 // String originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
@@ -48,6 +123,40 @@ public class RestoreManager {
                     Files.copy(vcPath, originalDestinationPath, StandardCopyOption.REPLACE_EXISTING);
                 } catch (IOException e) {
                     System.out.println(e.getMessage());
+                }
+            }
+            else {
+                File vcFile = vcEntry.getValue();
+                File destinationFile = destinationMap.get(vcEntry.getKey());
+
+                String vcFileName = pathUtilities.name(vcFile.getAbsolutePath());
+                String destinationFileName = pathUtilities.name(destinationFile.getAbsolutePath());
+
+                if (!vcFileName.equals(destinationFileName)) {
+                    String destinationFilePath = destinationFile.getAbsolutePath();
+
+                    String delimiter = pathUtilities.splitCharacterHelper(destinationFilePath);
+
+                    String filePath = destinationFilePath.replace(String.format("%s%s", delimiter, destinationFileName), String.format("%s%s", delimiter, vcFileName));
+                    while (fileUtilities.isFile(filePath)) {
+                        String[] fileParts = filePath.split("\\.");
+                        String extension = fileParts[fileParts.length - 1];
+                        String filePathWithoutExtension = filePath.substring(0, filePath.length() - (extension.length() + 1));                       // Added one to the length of the extension to account for the "." character
+                        filePath = filePathWithoutExtension + "-Copy." + extension;
+                    }
+
+                    File renameFile = new File(filePath);
+
+                    try {
+                        boolean renameSuccessful = destinationFile.renameTo(renameFile);
+                        if (renameSuccessful) {
+                            System.out.println("Rename was successful");
+                        } else {
+                            System.out.println("Failed to rename file");
+                        }
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
@@ -63,7 +172,7 @@ public class RestoreManager {
             partialPath = pathUtilities.pathBuilder(splitPath[0], splitPath[1]);
         }
         else {
-            splitPath = path.split("\\/");
+            splitPath = path.split("/");
             partialPath = pathUtilities.pathBuilder(splitPath[0], splitPath[1]);
         }
         // String[] splitPath = path.split("\\\\");
@@ -104,8 +213,26 @@ public class RestoreManager {
         // If not, create them and copy the file to that original path
 
         // Checks the directory path to make sure it exists
-        if (directoryUtilities.isDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
+        if (directoryUtilities.isAVersionControlNumberDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
             restore(versionPath, destinationPath);
         }
+        else {
+            System.out.println("Invalid request");
+        }
     }
+
+    /*
+    public static void main(String[] args) {
+        // String destination = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/";
+        String destination = "C:/Users/lotlo/OneDrive/Documents/restore_test/";
+
+        // String vcSource = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/.vc/1";
+        String vcSource = "C:/Users/lotlo/OneDrive/Documents/restore_test/.vc/1";
+
+        Restore(vcSource, destination);
+
+    }
+
+     */
+
 }
