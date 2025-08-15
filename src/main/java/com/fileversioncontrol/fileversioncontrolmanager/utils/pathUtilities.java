@@ -7,6 +7,34 @@ import java.util.List;
 import java.util.regex.PatternSyntaxException;
 
 public class pathUtilities {
+    public static void createDirectoryPathIfItDoesNotExist(String path) {
+        String[] splitPath;
+        String partialPath;
+
+        String delimiter = splitCharacterHelper(path);
+        if (delimiter.equals("\\")) {
+            splitPath = path.split("\\\\");
+            partialPath = pathBuilder(splitPath[0], splitPath[1]);
+        } else {
+            splitPath = path.split("/");
+            partialPath = pathBuilder(splitPath[0], splitPath[1]);
+        }
+
+        ArrayList<String> list = new ArrayList<>(Arrays.asList(splitPath));
+        list.remove(splitPath[0]);
+        list.remove(splitPath[1]);
+        list.remove(splitPath[splitPath.length - 1]); // Erase the filename from the path
+
+        splitPath = list.toArray(new String[0]);
+
+        for (String piece : splitPath) {
+            partialPath = pathBuilder(partialPath, piece);
+            if (!directoryUtilities.isDirectory(partialPath)) {
+                directoryUtilities.createDirectory(partialPath, name(partialPath));
+            }
+        }
+    }
+
     public static List<String> getAllDirectoryPathsInOneLayer(String directoryPath) {
         List<String> emptyList = new ArrayList<>();
         File directory = new File(directoryPath);
@@ -14,8 +42,7 @@ public class pathUtilities {
 
         try {
             files = directory.listFiles(File::isDirectory);
-        }
-        catch (SecurityException e) {
+        } catch (SecurityException e) {
             files = null;
         }
 
@@ -34,8 +61,6 @@ public class pathUtilities {
 
         for (String path : allPaths) {
             if (directoryUtilities.isDirectory(path)) {
-                // String[] splitPath = path.split("\\\\");
-                // String directoryName = splitPath[splitPath.length - 1];
                 String directoryName = name(path);
 
                 if (!directoryName.equals(".vc")) {
@@ -55,8 +80,7 @@ public class pathUtilities {
 
         try {
             files = directory.listFiles();
-        }
-        catch (SecurityException e) {
+        } catch (SecurityException e) {
             files = null;
         }
 
@@ -75,8 +99,7 @@ public class pathUtilities {
         if (delimiter.equals("\\")) {
             String[] splitBackSlashPath = path.split("\\\\");
             return splitBackSlashPath[splitBackSlashPath.length - 1];
-        }
-        else {
+        } else {
             String[] splitForwardSlashPath = path.split("\\/");
             return splitForwardSlashPath[splitForwardSlashPath.length - 1];
         }
@@ -91,14 +114,9 @@ public class pathUtilities {
     }
 
     public static String splitCharacterHelper(String path) {
-        //String[] splitBackSlashPath = path.split("\\\\");
-        // String[] splitForwardSlashPath = path.split("\\/");
-        // int index = path.indexOf("\\");
-
         if (path.contains("\\")) {
             return "\\";
-        }
-        else {
+        } else {
             return "/";
         }
     }

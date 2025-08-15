@@ -23,8 +23,7 @@ public class directoryUtilities {
             } else {
                 System.out.println("Failed to create directory \"" + directoryName + "\" or it already exists.");
             }
-        }
-        catch (SecurityException e) {
+        } catch (SecurityException e) {
             System.out.println("You do not have permission to create directory \"" + directoryName + "\"");
         }
     }
@@ -34,18 +33,15 @@ public class directoryUtilities {
 
         String delimiter = pathUtilities.splitCharacterHelper(pathString);
         if (delimiter.equals("\\")) {
-            pattern = Pattern.compile("^[^\\\\].*\\\\[^\\\\]+\\\\.vc\\\\\\d+$");
-        }
-        else {
-            pattern = Pattern.compile("^[^/].*/[^/]+/.vc/\\d+$");
+            pattern = Pattern.compile("^[^\\\\].*\\\\[^\\\\]+\\\\.vc\\\\\\d+\\\\?$");
+        } else {
+            pattern = Pattern.compile("^[^/].*/[^/]+/.vc/\\d+/?$");
         }
 
         Matcher matcher = pattern.matcher(pathString);
-        if (matcher.find())
-        {
+        if (matcher.find()) {
             return isDirectory(pathString);
-        }
-        else {
+        } else {
             return false;
         }
     }
@@ -63,92 +59,6 @@ public class directoryUtilities {
             return false;
         }
     }
-
-    /*
-    public static boolean isDirectoryChanged(String path) {
-        HashMap<String, File> currentFiles = new HashMap<>();
-        HashMap<String, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
-
-        HashMap<String, File> lastSavedFiles = new HashMap<>();
-        String latestVCPath = getLatestVersionNumberDirectory(path);
-        HashMap<String, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath, lastSavedFiles);
-
-        if (currentDirectoryHashMap.size() != latestVersionControlHashMap.size()) {
-            return true;
-        }
-        else {
-            for (Map.Entry<String, File> vcEntry : latestVersionControlHashMap.entrySet()) {
-                if (currentDirectoryHashMap.get(vcEntry.getKey()) != null) {
-                    File vcFile = vcEntry.getValue();
-                    String vcFilePath = vcFile.getAbsolutePath();
-
-                    File currentFile = currentDirectoryHashMap.get(vcEntry.getKey());
-                    String currentFilePath = currentFile.getAbsolutePath();
-
-                    String originalPath;
-                    String delimiter = pathUtilities.splitCharacterHelper(vcFilePath);
-                    if (delimiter.equals("\\")) {
-                        originalPath = vcFilePath.replaceAll("\\\\.vc\\\\\\d", "");
-                    }
-                    else {
-                        originalPath = vcFilePath.replaceAll("/.vc/\\d", "");
-                    }
-
-                    if (!currentFilePath.equals(originalPath)) {
-                        return true;
-                    }
-                }
-                else {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-    */
-
-    /*
-    public static boolean isDirectoryUpToDate(String path) {
-        HashMap<Integer, File> currentFiles = new HashMap<>();
-        HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
-
-        HashMap<Integer, File> lastSavedFiles = new HashMap<>();
-        String latestVCPath = getLatestVersionNumberDirectory(path);
-        HashMap<Integer, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath, lastSavedFiles);
-
-        if (currentDirectoryHashMap.size() != latestVersionControlHashMap.size()) {
-            return true;
-        }
-        else {
-            for (Map.Entry<Integer, File> vcEntry : latestVersionControlHashMap.entrySet()) {
-                if (currentDirectoryHashMap.get(vcEntry.getKey()) != null) {
-                    File vcFile = vcEntry.getValue();
-                    String vcFilePath = vcFile.getAbsolutePath();
-
-                    File currentFile = currentDirectoryHashMap.get(vcEntry.getKey());
-                    String currentFilePath = currentFile.getAbsolutePath();
-
-                    String originalPath;
-                    String delimiter = pathUtilities.splitCharacterHelper(vcFilePath);
-                    if (delimiter.equals("\\")) {
-                        originalPath = vcFilePath.replaceAll("\\\\.vc\\\\\\d", "");
-                    }
-                    else {
-                        originalPath = vcFilePath.replaceAll("/.vc/\\d", "");
-                    }
-
-                    if (!currentFilePath.equals(originalPath)) {
-                        return true;
-                    }
-                }
-                else {
-                    return true;
-                }
-            }
-            return false;
-        }
-    }
-    */
 
     public static boolean isDirectoryUpToDate(String path) {
         HashMap<Integer, File> currentFiles = new HashMap<>();
@@ -170,33 +80,12 @@ public class directoryUtilities {
 
     public static boolean isDirectoryChanged(HashMap<Integer, File> currentDirectoryHashMap, HashMap<Integer, File> vcDirectoryHashMap) {
         for (Map.Entry<Integer, File> vcEntry : vcDirectoryHashMap.entrySet()) {
-            boolean isFileChanged = isFileChanged(vcEntry, currentDirectoryHashMap);
+            boolean isFileChanged = fileUtilities.isFileChangedForCommit(vcEntry, currentDirectoryHashMap);
             if (isFileChanged) {
                 return true;
             }
         }
         return false;
-    }
-
-    public static boolean isFileChanged(Map.Entry<Integer, File> vcEntry, HashMap<Integer, File> currentDirectoryHashMap) {
-        if (currentDirectoryHashMap.containsKey(vcEntry.getKey())) {
-            String currentFilePath = currentDirectoryHashMap.get(vcEntry.getKey()).getAbsolutePath();
-            String vcFilePath = vcEntry.getValue().getAbsolutePath();
-
-            return isFileContentChanged(currentFilePath, vcFilePath);
-        }
-        return true;
-    }
-
-    public static boolean isFileContentChanged(String currentFilePath, String vcFilePath) {
-        try {
-            String currentFileHash = hashUtilities.hashFile(currentFilePath);
-            String vcFileHash = hashUtilities.hashFile(vcFilePath);
-            return !currentFileHash.equals(vcFileHash);
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-            return false;                                       // Do not commit or restore file if it cannot be hashed
-        }
     }
 
 

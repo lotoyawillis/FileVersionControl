@@ -2,14 +2,19 @@ package com.fileversioncontrol.fileversioncontrolmanager.commit;
 
 import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 public class VersionManager {
@@ -27,12 +32,6 @@ public class VersionManager {
         }
         return successfulCommit;
     }
-
-    /*
-    public static boolean commitDirectory(String directoryPath, String originalDirectoryPath) {
-        return commitFiles(directoryPath, originalDirectoryPath);
-    }
-    */
 
     public static boolean commitFiles(String directoryPath, String originalDirectoryPath) {
         int versionNumber = 1;
@@ -82,15 +81,12 @@ public class VersionManager {
         // If .vc does exist, create a directory with a new version number
         // and copy all files in the input directory to their respective directories under the version directory
 
-        // path = "C:\\Users\\lotlo\\OneDrive\\Documents\\test1";
-
         boolean successfulCommit = false;
 
         // Checks the directory path to make sure it exists
         if (directoryUtilities.isDirectory(path) && !directoryUtilities.isDirectoryUpToDate(path)) {
             return commit(path);
-        }
-        else {
+        } else {
             return successfulCommit;
         }
     }
