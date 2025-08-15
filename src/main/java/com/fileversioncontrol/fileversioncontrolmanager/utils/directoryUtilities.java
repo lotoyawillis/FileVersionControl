@@ -34,10 +34,10 @@ public class directoryUtilities {
 
         String delimiter = pathUtilities.splitCharacterHelper(pathString);
         if (delimiter.equals("\\")) {
-            pattern = Pattern.compile("\\\\[^\\\\]+\\\\.vc\\\\\\d");
+            pattern = Pattern.compile("^[^\\\\].*\\\\[^\\\\]+\\\\.vc\\\\\\d+$");
         }
         else {
-            pattern = Pattern.compile("/[^/]+/.vc/\\d");
+            pattern = Pattern.compile("^[^/].*/[^/]+/.vc/\\d+$");
         }
 
         Matcher matcher = pattern.matcher(pathString);
@@ -64,6 +64,7 @@ public class directoryUtilities {
         }
     }
 
+    /*
     public static boolean isDirectoryChanged(String path) {
         HashMap<String, File> currentFiles = new HashMap<>();
         HashMap<String, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
@@ -104,9 +105,10 @@ public class directoryUtilities {
             return false;
         }
     }
+    */
 
     /*
-    public static boolean isDirectoryChanged(String path) {
+    public static boolean isDirectoryUpToDate(String path) {
         HashMap<Integer, File> currentFiles = new HashMap<>();
         HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
 
@@ -148,28 +150,80 @@ public class directoryUtilities {
     }
     */
 
-    public static String getLatestVersionNumberDirectory(String path) {
-        String vcPath = pathUtilities.pathBuilder(path, ".vc");
-        List<String> directories = pathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
-        FileTime latestCreationTime = FileTime.fromMillis(0);
-        String latestDirectory = "";
+    public static boolean isDirectoryUpToDate(String path) {
+        HashMap<Integer, File> currentFiles = new HashMap<>();
+        HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
 
-        for (String directory: directories) {
-            Path filePath = Paths.get(directory);
-            try {
-                BasicFileAttributes attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
-                if (latestCreationTime.compareTo(attributes.creationTime()) < 0) {
-                    latestCreationTime = attributes.creationTime();
-                    latestDirectory = directory;
-                }
-            }
-            catch (Exception e) {
-                System.out.println(e.getMessage());
-                System.out.println("Could not read directory attributes");
-                return null;
+        HashMap<Integer, File> lastSavedFiles = new HashMap<>();
+        String latestVCPath = getLatestVersionNumberDirectory(path);
+        if (!latestVCPath.isEmpty()) {
+            HashMap<Integer, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath, lastSavedFiles);
+
+            if (currentDirectoryHashMap.size() != latestVersionControlHashMap.size()) {
+                return false;
+            } else {
+                return !isDirectoryChanged(currentDirectoryHashMap, latestVersionControlHashMap);
             }
         }
+        return false;
+    }
 
-        return latestDirectory;
+    public static boolean isDirectoryChanged(HashMap<Integer, File> currentDirectoryHashMap, HashMap<Integer, File> vcDirectoryHashMap) {
+        for (Map.Entry<Integer, File> vcEntry : vcDirectoryHashMap.entrySet()) {
+            boolean isFileChanged = isFileChanged(vcEntry, currentDirectoryHashMap);
+            if (isFileChanged) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public static boolean isFileChanged(Map.Entry<Integer, File> vcEntry, HashMap<Integer, File> currentDirectoryHashMap) {
+        if (currentDirectoryHashMap.containsKey(vcEntry.getKey())) {
+            String currentFilePath = currentDirectoryHashMap.get(vcEntry.getKey()).getAbsolutePath();
+            String vcFilePath = vcEntry.getValue().getAbsolutePath();
+
+            return isFileContentChanged(currentFilePath, vcFilePath);
+        }
+        return true;
+    }
+
+    public static boolean isFileContentChanged(String currentFilePath, String vcFilePath) {
+        try {
+            String currentFileHash = hashUtilities.hashFile(currentFilePath);
+            String vcFileHash = hashUtilities.hashFile(vcFilePath);
+            return !currentFileHash.equals(vcFileHash);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return false;                                       // Do not commit or restore file if it cannot be hashed
+        }
+    }
+
+
+    public static String getLatestVersionNumberDirectory(String path) {
+        String vcPath = pathUtilities.pathBuilder(path, ".vc");
+        if (isDirectory(vcPath)) {
+            List<String> directories = pathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
+            FileTime latestCreationTime = FileTime.fromMillis(0);
+            String latestDirectory = "";
+
+            for (String directory : directories) {
+                Path filePath = Paths.get(directory);
+                try {
+                    BasicFileAttributes attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
+                    if (latestCreationTime.compareTo(attributes.creationTime()) < 0) {
+                        latestCreationTime = attributes.creationTime();
+                        latestDirectory = directory;
+                    }
+                } catch (Exception e) {
+                    System.out.println(e.getMessage());
+                    System.out.println("Could not read directory attributes");
+                    return "";
+                }
+            }
+            return latestDirectory;
+        }
+
+        return "";
     }
 }

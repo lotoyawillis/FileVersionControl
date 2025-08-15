@@ -1,7 +1,6 @@
 package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
 import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
 import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
 
@@ -15,9 +14,72 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class RestoreManager {
+    public static void restore(String vcSource, String destination) {
+        HashMap<Integer, File> map1 = new HashMap<>();
+        HashMap<Integer, File> map2 = new HashMap<>();
+        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource, map1);
+        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination, map2);
+
+        File destinationFile = new File(destination);
+
+        for (Map.Entry<Integer, File> vcEntry : vcMap.entrySet()) {
+            boolean isFileChanged = directoryUtilities.isFileChanged(vcEntry, destinationMap);
+
+            if (isFileChanged) {
+                File vcFile = vcEntry.getValue();
+                String vcFilePathString = vcFile.getAbsolutePath();
+
+                Pattern pattern;
+                Matcher matcher;
+
+                String destinationPathString;
+                String delimiter = pathUtilities.splitCharacterHelper(vcFilePathString);
+                if (delimiter.equals("\\")) {
+                    pattern = Pattern.compile("^(.*?\\\\.vc\\\\\\d+)");
+                    matcher = pattern.matcher(vcFilePathString);
+
+                    if (matcher.find()) {
+                        destinationPathString = matcher.replaceFirst(Matcher.quoteReplacement(destinationFile.getAbsolutePath()));
+                    }
+                    else {
+                        destinationPathString = vcFilePathString.replaceFirst("\\\\.vc\\\\\\d+", "");
+                    }
+                }
+                else {
+                    pattern = Pattern.compile("^(.*?/.vc/\\d+)");
+                    matcher = pattern.matcher(vcFilePathString);
+
+                    if (matcher.find()) {
+                        destinationPathString = matcher.replaceFirst(Matcher.quoteReplacement(destinationFile.getAbsolutePath()));
+                    }
+                    else {
+                        destinationPathString = vcFilePathString.replaceFirst("/.vc/\\d+", "");
+                    }
+                }
+
+                createDirectoryPathIfItDoesNotExist(destinationPathString);
+
+                Path vcPath = Paths.get(vcFilePathString);
+                Path destinationPath = Paths.get(destinationPathString);
+
+                try {
+                    Files.copy(vcPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    System.out.printf("%s has been restored\n", pathUtilities.name(vcFilePathString));
+                } catch (IOException e) {
+                    System.out.println(e.getMessage());
+                }
+            }
+            else {
+                System.out.printf("%s is already up to date\n", pathUtilities.name(vcEntry.getValue().getAbsolutePath()));
+            }
+        }
+    }
+
     /*
     public static void restore(String vcSource, String destination) {
         HashMap<Integer, File> map1 = new HashMap<>();
@@ -91,6 +153,7 @@ public class RestoreManager {
     }
     */
 
+    /*
     public static void restore(String vcSource, String destination) {
         HashMap<String, File> map1 = new HashMap<>();
         HashMap<String, File> map2 = new HashMap<>();
@@ -162,7 +225,9 @@ public class RestoreManager {
         }
     }
 
-    public static void verifyPathExists(String path) {
+     */
+
+    public static void createDirectoryPathIfItDoesNotExist(String path) {
         String[] splitPath;
         String partialPath;
 
@@ -224,15 +289,13 @@ public class RestoreManager {
     /*
     public static void main(String[] args) {
         // String destination = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/";
-        String destination = "C:/Users/lotlo/OneDrive/Documents/restore_test/";
+        String destination = "C:/Users/lotlo/OneDrive/Documents/destination/test/other notes/embedded/new";
 
         // String vcSource = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/.vc/1";
-        String vcSource = "C:/Users/lotlo/OneDrive/Documents/restore_test/.vc/1";
+        String vcSource = "C:/Users/lotlo/OneDrive/Documents/test2/.vc/1";
 
         Restore(vcSource, destination);
-
     }
-
-     */
+    */
 
 }

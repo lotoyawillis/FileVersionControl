@@ -60,7 +60,7 @@ public class hashUtilities {
         return hashMap;
     }
 
-     */
+
 
 
     public static HashMap<String, File> createHashMap(String pathString, HashMap<String, File> hashMap) {
@@ -81,10 +81,10 @@ public class hashUtilities {
         }
         return hashMap;
     }
+    */
 
 
 
-    /*
     public static HashMap<Integer, File> createHashMap(String pathString, HashMap<Integer, File> hashMap) {
         List<String> paths = new ArrayList<>();
         List<String> allPaths = pathUtilities.getAllFilePaths(pathString, paths);
@@ -94,10 +94,10 @@ public class hashUtilities {
                 String originalPath;
                 String delimiter = pathUtilities.splitCharacterHelper(path);
                 if (delimiter.equals("\\")) {
-                    originalPath = path.replaceAll("\\\\.vc\\\\\\d", "");
+                    originalPath = path.replaceAll("\\\\.vc\\\\\\d+", "");
                 }
                 else {
-                    originalPath = path.replaceAll("/.vc/\\d", "");
+                    originalPath = path.replaceAll("/.vc/\\d+", "");
                 }
 
                 File hashFile = new File(originalPath);                            // Files are saved with the hash code values they had before they were committed and their current
@@ -111,6 +111,5 @@ public class hashUtilities {
         }
         return hashMap;
     }
-    */
 
 }
