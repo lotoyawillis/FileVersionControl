@@ -5,10 +5,10 @@ export default `<!doctype html>
   <title>AngularApp</title>
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-<link rel="stylesheet" href="styles-5INURTSO.css"></head>
+<link rel="stylesheet" href="styles-ZUISL3KO.css" media="print" onload="this.media='all'"><noscript><link rel="stylesheet" href="styles-ZUISL3KO.css"></noscript></head>
 <body ngcm="">
   <app-root>
   </app-root>
-<script src="main-XQZMKIUY.js" type="module"></script></body>
+<script src="main-SP5JN3BF.js" type="module"></script></body>
 </html>
 `;

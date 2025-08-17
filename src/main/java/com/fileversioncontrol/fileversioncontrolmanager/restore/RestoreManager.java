@@ -1,7 +1,9 @@
 package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
-import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.directoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.fileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.hashUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.pathUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -10,68 +12,97 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class RestoreManager {
+    public static List<String> restore(String vcSource, String destination) {
+        List<String> results = new ArrayList<>();
 
-    public static void restore(String vcSource, String destination) {
-        HashMap<String, File> map1 = new HashMap<>();
-        HashMap<String, File> map2 = new HashMap<>();
-        HashMap<String, File> vcMap = hashUtilities.createHashMap(vcSource, map1);
-        HashMap<String, File> destinationMap = hashUtilities.createHashMap(destination, map2);
+        HashMap<Integer, File> map1 = new HashMap<>();
+        HashMap<Integer, File> map2 = new HashMap<>();
+        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource, map1);
+        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination, map2);
 
-        for (Map.Entry<String, File> vcEntry : vcMap.entrySet()) {
-            if (destinationMap.get(vcEntry.getKey()) == null) {
-                File file = vcEntry.getValue();
-                String filePath = file.getAbsolutePath();
-                String originalPath = filePath.replaceAll("\\\\.vc\\\\\\d", "");
-                verifyPathExists(originalPath);
+        File destinationFile = new File(destination);
+        String destinationPathString = destinationFile.getAbsolutePath();
 
-                Path vcPath = Paths.get(filePath);
-                Path originalDestinationPath = Paths.get(originalPath);
+        for (Map.Entry<Integer, File> vcEntry : vcMap.entrySet()) {
+            boolean isFileChanged = fileUtilities.isFileChangedForRestore(vcEntry, destinationMap, destinationPathString);
+
+            if (isFileChanged) {
+                File vcFile = vcEntry.getValue();
+                String vcFilePathString = vcFile.getAbsolutePath();
+
+                Pattern pattern;
+                Matcher matcher;
+
+                String destinationFilePathString;
+                String delimiter = pathUtilities.splitCharacterHelper(vcFilePathString);
+                if (delimiter.equals("\\")) {
+                    pattern = Pattern.compile("^(.*?\\\\.vc\\\\\\d+)");
+                    matcher = pattern.matcher(vcFilePathString);
+
+                    if (matcher.find()) {
+                        destinationFilePathString = matcher.replaceFirst(Matcher.quoteReplacement(destinationPathString));
+                    } else {
+                        destinationFilePathString = vcFilePathString.replaceFirst("\\\\.vc\\\\\\d+", "");
+                    }
+                } else {
+                    pattern = Pattern.compile("^(.*?/.vc/\\d+)");
+                    matcher = pattern.matcher(vcFilePathString);
+
+                    if (matcher.find()) {
+                        destinationFilePathString = matcher.replaceFirst(Matcher.quoteReplacement(destinationPathString));
+                    } else {
+                        destinationFilePathString = vcFilePathString.replaceFirst("/.vc/\\d+", "");
+                    }
+                }
+
+                pathUtilities.createDirectoryPathIfItDoesNotExist(destinationFilePathString);
+
+                Path vcPath = Paths.get(vcFilePathString);
+                Path destinationPath = Paths.get(destinationFilePathString);
 
                 try {
-                    Files.copy(vcPath, originalDestinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    Files.copy(vcPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    results.add(String.format("%s has been restored\n", pathUtilities.name(vcFilePathString)));
                 } catch (IOException e) {
-                    System.out.println(e.getMessage());
+                    results.add(String.format("%s has not been restored\n", pathUtilities.name(vcFilePathString)));
                 }
+            } else {
+                results.add(String.format("%s is already up to date\n", pathUtilities.name(vcEntry.getValue().getAbsolutePath())));
             }
         }
+
+        return results;
     }
 
-    public static void verifyPathExists(String path) {
-        String[] splitPath = path.split("\\\\");
-        String partialPath = splitPath[0] + "\\" + splitPath[1];
 
-        ArrayList<String> list = new ArrayList<>(Arrays.asList(splitPath));
-        list.remove(splitPath[0]);
-        list.remove(splitPath[1]);
-        list.remove(splitPath[splitPath.length - 1]);
-
-        splitPath = list.toArray(new String[0]);
-
-        for (String piece : splitPath) {
-            partialPath = partialPath + "\\" + piece;
-            if (!directoryUtilities.isDirectory(partialPath)) {
-                String[] splitPartialPath = partialPath.split("\\\\");
-                directoryUtilities.createDirectory(partialPath, splitPartialPath[splitPartialPath.length - 1]);
-            }
-        }
-    }
-
-    public static void Restore(String versionPath, String destinationPath) {
+    public static List<String> Restore(String versionPath, String destinationPath) {
         // Enter a version number to revert to and a path to the directory where you want the reverted files
         // Create HashMaps from the version number directory and the destination directory
         // Iterate through the version number directory's HashMap and search for its keys within the destination directory's HashMap
         // If a key from the version directory's files is not found, verify all directories in the path it was saved from still exist
         // If not, create them and copy the file to that original path
 
+        List<String> results = new ArrayList<>();
+
         // Checks the directory path to make sure it exists
-        if (directoryUtilities.isDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
-            restore(versionPath, destinationPath);
+        if (directoryUtilities.isAVersionControlNumberDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
+            results = restore(versionPath, destinationPath);
+        } else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath) && !directoryUtilities.isDirectory(destinationPath)) {
+            results.add(String.format("%s is not a valid version control directory and %s is not a directory", versionPath, destinationPath));
+        }  else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath)) {
+            results.add(String.format("%s is not a valid version control directory", versionPath));
+        } else {
+            results.add(String.format("%s is not a directory", destinationPath));
         }
+
+        return results;
     }
 }
