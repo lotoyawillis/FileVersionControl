@@ -1,0 +1,9 @@
+{
+  "routes": {
+    "/": {},
+    "/commit": {},
+    "/request_error": {},
+    "/restore": {},
+    "/success": {}
+  }
+}
