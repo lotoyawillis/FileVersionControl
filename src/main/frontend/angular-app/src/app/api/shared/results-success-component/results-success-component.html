@@ -3,7 +3,7 @@
 <ul *ngIf="responseData?.results?.length ?? 0 > 0; else noData">
   <li *ngFor="let result of responseData?.results">{{result}}</li>
 </ul>
-<p>Message: {{responseData?.message ?? ""}}</p>
+<p>Message: {{ responseData?.message ? responseData?.message : '' }}</p>
 
 <ng-template #noData>
   <p>No results found.</p>
