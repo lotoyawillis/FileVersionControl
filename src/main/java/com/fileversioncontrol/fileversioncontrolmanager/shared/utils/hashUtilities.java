@@ -1,4 +1,4 @@
-package com.fileversioncontrol.fileversioncontrolmanager.utils;
+package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -32,59 +32,6 @@ public class hashUtilities {
         return hexString.toString();
     }
 
-    /*
-    public static HashMap<String, File> createHashMap(String pathString, HashMap<String, File> hashMap) {
-        List<String> allPaths = pathUtilities.getAllPathsInOneLayer(pathString);
-        String hash;
-        try {
-            for (String path : allPaths) {
-                if (directoryUtilities.isDirectory(path)) {
-                    String[] splitPath = path.split("\\\\");
-                    String directoryName = splitPath[splitPath.length - 1];
-
-                    if (!directoryName.equals(".vc")) {
-                        createHashMap(path, hashMap);
-                    }
-                } else if (fileUtilities.isFile(path)) {
-                    hash = hashFile(path);
-                    File file = new File(path);
-
-                    if (!hash.isEmpty()) {
-                        hashMap.put(hash, file);
-                    }
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return hashMap;
-    }
-
-
-
-
-    public static HashMap<String, File> createHashMap(String pathString, HashMap<String, File> hashMap) {
-        List<String> paths = new ArrayList<>();
-        List<String> allPaths = pathUtilities.getAllFilePaths(pathString, paths);
-        String hash;
-        try {
-            for (String path : allPaths) {
-                hash = hashFile(path);
-                File file = new File(path);
-
-                if (!hash.isEmpty()) {
-                    hashMap.put(hash, file);
-                }
-            }
-        } catch (Exception e) {
-            System.out.println(e.getMessage());
-        }
-        return hashMap;
-    }
-    */
-
-
-
     public static HashMap<Integer, File> createHashMap(String pathString, HashMap<Integer, File> hashMap) {
         List<String> paths = new ArrayList<>();
         List<String> allPaths = pathUtilities.getAllFilePaths(pathString, paths);
@@ -95,8 +42,7 @@ public class hashUtilities {
                 String delimiter = pathUtilities.splitCharacterHelper(path);
                 if (delimiter.equals("\\")) {
                     originalPath = path.replaceAll("\\\\.vc\\\\\\d+", "");
-                }
-                else {
+                } else {
                     originalPath = path.replaceAll("/.vc/\\d+", "");
                 }
 

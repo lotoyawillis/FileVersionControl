@@ -1,9 +1,9 @@
 package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
-import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.directoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.fileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.hashUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.pathUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -11,7 +11,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -69,7 +72,7 @@ public class RestoreManager {
                     Files.copy(vcPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
                     results.add(String.format("%s has been restored\n", pathUtilities.name(vcFilePathString)));
                 } catch (IOException e) {
-                    results.add(e.getMessage());
+                    results.add(String.format("%s has not been restored\n", pathUtilities.name(vcFilePathString)));
                 }
             } else {
                 results.add(String.format("%s is already up to date\n", pathUtilities.name(vcEntry.getValue().getAbsolutePath())));
@@ -80,41 +83,26 @@ public class RestoreManager {
     }
 
 
-    public static String Restore(String versionPath, String destinationPath) {
+    public static List<String> Restore(String versionPath, String destinationPath) {
         // Enter a version number to revert to and a path to the directory where you want the reverted files
         // Create HashMaps from the version number directory and the destination directory
         // Iterate through the version number directory's HashMap and search for its keys within the destination directory's HashMap
         // If a key from the version directory's files is not found, verify all directories in the path it was saved from still exist
         // If not, create them and copy the file to that original path
 
+        List<String> results = new ArrayList<>();
+
         // Checks the directory path to make sure it exists
         if (directoryUtilities.isAVersionControlNumberDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
-            List<String> results = restore(versionPath, destinationPath);
-            for (String result : results) {
-                if (result.contains("has been restored")) {
-                    return "OK";
-                } else if (!result.contains("is already up to date")) {
-                    return "RESTORE_FAILED";
-                }
-            }
-            return "UP_TO_DATE";
+            results = restore(versionPath, destinationPath);
+        } else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath) && !directoryUtilities.isDirectory(destinationPath)) {
+            results.add(String.format("%s is not a valid version control directory and %s is not a directory", versionPath, destinationPath));
+        }  else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath)) {
+            results.add(String.format("%s is not a valid version control directory", versionPath));
         } else {
-            return "BAD_REQUEST";
+            results.add(String.format("%s is not a directory", destinationPath));
         }
+
+        return results;
     }
-
-    /*
-    public static void main(String[] args) {
-        // String destination = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/";
-        String destination = "C:/Users/lotlo/OneDrive/Documents/destination";
-
-        // String vcSource = "C:/Users/lotlo/OneDrive/Documents/commit_test_do_commit/.vc/1";
-        String vcSource = "C:/Users/lotlo/OneDrive/Documents/test2/.vc/1";
-
-        String status = Restore(vcSource, destination);
-
-        System.out.println(status);
-    }
-    */
-
 }

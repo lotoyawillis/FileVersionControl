@@ -1,39 +1,36 @@
 package com.fileversioncontrol.fileversioncontrolmanager.commit;
 
-import com.fileversioncontrol.fileversioncontrolmanager.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.fileUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.hashUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.utils.pathUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.directoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.fileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.pathUtilities;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 
-public class VersionManager {
-    public static boolean commit(String path) {
+public class CommitManager {
+    public static List<String> commit(String path) {
+        List<String> results = new ArrayList<>();
+
         String vcPath = pathUtilities.pathBuilder(path, ".vc");
-
-        boolean successfulCommit = false;
 
         // Checks if the .vc directory exists
         if (directoryUtilities.isDirectory(vcPath)) {
-            successfulCommit = commitFiles(vcPath, path);
+            results = commitFiles(vcPath, path);
         } else if (!directoryUtilities.isDirectory(vcPath)) {
             directoryUtilities.createDirectory(vcPath, ".vc");
-            successfulCommit = commitFiles(vcPath, path);
+            results = commitFiles(vcPath, path);
         }
-        return successfulCommit;
+        return results;
     }
 
-    public static boolean commitFiles(String directoryPath, String originalDirectoryPath) {
+    public static List<String> commitFiles(String directoryPath, String originalDirectoryPath) {
+        List<String> results = new ArrayList<>();
         int versionNumber = 1;
         String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
         while (directoryUtilities.isDirectory(vcDirectoryPath)) {
@@ -42,10 +39,10 @@ public class VersionManager {
         }
 
         directoryUtilities.createDirectory(vcDirectoryPath, Integer.toString(versionNumber));
-        return copyAllFiles(vcDirectoryPath, originalDirectoryPath);
+        return copyAllFiles(vcDirectoryPath, originalDirectoryPath, results);
     }
 
-    public static boolean copyAllFiles(String vcDirectoryPath, String originalDirectoryPath) {
+    public static List<String> copyAllFiles(String vcDirectoryPath, String originalDirectoryPath, List<String> results) {
         List<String> allPaths = pathUtilities.getAllPathsInOneLayer(originalDirectoryPath);
 
         for (String path : allPaths) {
@@ -55,7 +52,7 @@ public class VersionManager {
 
                 if (!directoryName.equals(".vc")) {
                     directoryUtilities.createDirectory(directoryPath, directoryName);
-                    copyAllFiles(directoryPath, path);
+                    results = copyAllFiles(directoryPath, path, results);
                 }
             } else if (fileUtilities.isFile(path)) {
                 String fileName = pathUtilities.name(path);
@@ -66,62 +63,32 @@ public class VersionManager {
 
                 try {
                     Files.copy(sourcePath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
+                    results.add(String.format("%s has been committed\n", fileName));
                 } catch (IOException e) {
-                    System.out.println(e.getMessage()); // No one will see this
-                    return false;
+                    results.add(String.format("%s has not been committed\n", fileName));
                 }
             }
         }
-        return true;
+        return results;
     }
 
-    public static boolean Commit(String path) {
+    public static List<String> Commit(String path) {
         // Enter a path to a directory
         // If it does not exist, create a .vc directory
         // If .vc does exist, create a directory with a new version number
         // and copy all files in the input directory to their respective directories under the version directory
 
-        boolean successfulCommit = false;
+        List<String> results = new ArrayList<>();
 
         // Checks the directory path to make sure it exists
         if (directoryUtilities.isDirectory(path) && !directoryUtilities.isDirectoryUpToDate(path)) {
             return commit(path);
+        } else if (!directoryUtilities.isDirectory(path)) {
+            results.add(String.format("%s is not a directory", path));
         } else {
-            return successfulCommit;
+            results.add(String.format("%s is up to date", path));
         }
+
+        return results;
     }
-
-
-    /*
-    public static void main(String[] args) {
-        //String path = "C:/Users/lotlo/OneDrive/Documents/test5/.vc";
-        // String path = "C:\\Users\\lotlo\\OneDrive\\Documents\\commit_test_do_commit";
-
-        String path = "C:\\Users\\lotlo\\OneDrive\\Documents\\test2";
-
-        List<String> empty = new ArrayList<>();
-        List<String> paths = pathUtilities.getAllFilePaths(path, empty); // unrelated
-
-        HashMap<Integer, File> map1 = new HashMap<>();
-        HashMap<Integer, File> dirHM = hashUtilities.createHashMap(path, map1);
-
-
-        for (String p : paths)
-        {
-            System.out.println(p);
-        }
-
-        System.out.println();
-
-        for (Map.Entry<Integer, File> entry : dirHM.entrySet())
-        {
-            System.out.println(entry);
-        }
-
-        System.out.println();
-
-        boolean result = Commit(path);
-        System.out.println(result);
-    }
-    */
 }

@@ -1,4 +1,4 @@
-package com.fileversioncontrol.fileversioncontrolmanager.utils;
+package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
 import java.nio.file.InvalidPathException;
@@ -6,7 +6,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.regex.PatternSyntaxException;
 
 public class fileUtilities {
     public static boolean isFile(String pathString) {

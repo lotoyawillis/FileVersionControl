@@ -1,4 +1,4 @@
-package com.fileversioncontrol.fileversioncontrolmanager.utils;
+package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
 import java.nio.file.Files;

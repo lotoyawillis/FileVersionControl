@@ -1,10 +1,9 @@
-package com.fileversioncontrol.fileversioncontrolmanager.utils;
+package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.regex.PatternSyntaxException;
 
 public class pathUtilities {
     public static void createDirectoryPathIfItDoesNotExist(String path) {
@@ -100,7 +99,7 @@ public class pathUtilities {
             String[] splitBackSlashPath = path.split("\\\\");
             return splitBackSlashPath[splitBackSlashPath.length - 1];
         } else {
-            String[] splitForwardSlashPath = path.split("\\/");
+            String[] splitForwardSlashPath = path.split("/");
             return splitForwardSlashPath[splitForwardSlashPath.length - 1];
         }
     }

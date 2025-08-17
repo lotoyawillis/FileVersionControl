@@ -1,6 +1,12 @@
-import { Injectable } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import {Injectable} from '@angular/core';
+import {HttpClient} from '@angular/common/http';
+import {Observable} from 'rxjs';
+
+export interface ApiResponse {
+  status: number;
+  results: string[];
+  message: string | null;
+}
 
 @Injectable({
   providedIn: 'root'
@@ -10,14 +16,14 @@ export class ApiService {
 
   constructor(private http: HttpClient) {}
 
-  postCommit(folderPath: String): Observable<any> {
-    this.apiUrl = this.apiUrl + 'commit';
-    return this.http.post(this.apiUrl, folderPath);
+  postCommit(folderPath: String): Observable<ApiResponse> {
+    this.apiUrl = 'http://localhost:8080/api/v1/commit';
+    return this.http.post<ApiResponse>(this.apiUrl, folderPath);
   }
 
-  postRestore(versionFolderPath: String, destinationFolderPath: String): Observable<any> {
-    this.apiUrl = this.apiUrl + 'restore';
-    let body: String[] = [versionFolderPath, destinationFolderPath];
-    return this.http.post(this.apiUrl, body);
+  postRestore(paths: String[]): Observable<ApiResponse> {
+    this.apiUrl = 'http://localhost:8080/api/v1/restore';
+    //let body: String[] = [versionFolderPath, destinationFolderPath];
+    return this.http.post<ApiResponse>(this.apiUrl, paths);
   }
 }
