@@ -1,0 +1,15 @@
+<nav>
+  <form (ngSubmit)="submit(form)" #form="ngForm">
+    <div>
+      <label for="inputBox1">Enter the absolute path of the version control directory you want to restore:</label>
+      <input class="u-full-width" type="text" name="vcPath" ngModel #vcPath="ngModel" id="inputBox1" placeholder="Absolute Folder Path" required>
+    </div>
+    <div>
+      <label for="inputBox2">Enter the absolute path of the destination directory:</label>
+      <input class="u-full-width" type="text" name="destinationPath" ngModel #destinationPath="ngModel" id="inputBox2" placeholder="Absolute Folder Path" required>
+    </div>
+    <div>
+      <button type="submit" class="button">Submit</button>
+    </div>
+  </form>
+</nav>
