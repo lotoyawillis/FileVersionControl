@@ -2,7 +2,10 @@
   <form (ngSubmit)="submit(form)" #form="ngForm">
   <div>
     <label for="inputBox">Enter the absolute path of the directory you want to commit:</label>
-    <input class="u-full-width" type="text" name="path" ngModel #path="ngModel" id="inputBox" placeholder="Absolute Folder Path" required>
+    <input class="u-full-width" type="text" name="directoryPath" ngModel #directoryPath="ngModel" id="inputBox" placeholder="Absolute Folder Path" required>
+    <div *ngIf="form.submitted && directoryPath.invalid" class="error">
+      A directory path is required.
+    </div>
   </div>
   <div>
     <button type="submit" class="button">Submit</button>

@@ -30,7 +30,7 @@ public class RestoreService {
         }
 
         if (totalUpToDateFiles == results.size()) {
-            throw new ApiException(HttpStatus.NOT_MODIFIED, results, "The requested restore directory is up to date");
+            throw new ApiException(HttpStatus.CONFLICT, results, "The requested destination directory is up to date with the version control directory");
         }
         return new Response(HttpStatus.CREATED.value(), results, "All files have been restored"); // only success case
     }

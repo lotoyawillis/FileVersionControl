@@ -1,5 +1,6 @@
 package com.fileversioncontrol.fileversioncontrolmanager.commit;
 
+import com.fileversioncontrol.fileversioncontrolmanager.commit.dto.CommitRequest;
 import com.fileversioncontrol.fileversioncontrolmanager.shared.dto.Response;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -14,7 +15,8 @@ public class CommitController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public Response postCommitFiles(@RequestBody String path){
+    public Response postCommitFiles(@RequestBody CommitRequest commitRequest){
+        String path = commitRequest.getPath();
         return commitService.commitFiles(path);
     }
 

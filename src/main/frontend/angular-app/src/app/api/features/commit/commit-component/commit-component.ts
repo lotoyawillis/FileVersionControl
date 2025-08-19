@@ -1,4 +1,4 @@
-import {Component, inject, Injectable} from '@angular/core';
+import {Component} from '@angular/core';
 import {ApiResponse, ApiService} from '../../../services/api-service';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
@@ -10,30 +10,24 @@ import {Router} from '@angular/router';
   styleUrl: './commit-component.css',
   standalone: false
 })
-@Injectable({
-  providedIn: 'root'
-})
 export class CommitComponent {
-  constructor(private apiService: ApiService, private router: Router) {
-    this.router = inject(Router);
-  }
+  constructor(private apiService: ApiService, private router: Router) {}
 
   submit(form: NgForm) {
-    const path = form.value.path;
+    if (!form.valid) {
+      return;
+    }
 
-    this.apiService.postCommit(path).subscribe(
+    const path = form.value.directoryPath;
+
+    this.apiService.postCommit({path}).subscribe(
       (response: ApiResponse) => {
         void this.router.navigate(['/success'], {state: {data: response}});
       },
       (error) => {
-        if (error.status === 304 || error.status === 400 || error.status === 500) {
-          void this.router.navigate(['/request_error'], {state: {data: error.error}});
-        } else {
-          void this.router.navigate(['/request_error'], {state: {data: error}});
-        }
+        const data = error.error || error;
+        void this.router.navigate(['/request_error'], { state: { data } });
       }
     );
   }
-
-  ngOnInit() {}
 }

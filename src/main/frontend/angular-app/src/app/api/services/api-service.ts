@@ -12,18 +12,17 @@ export interface ApiResponse {
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8080/api/v1/';
+  private baseUrl = 'http://localhost:8080/api/v1/';
 
   constructor(private http: HttpClient) {}
 
-  postCommit(folderPath: String): Observable<ApiResponse> {
-    this.apiUrl = 'http://localhost:8080/api/v1/commit';
-    return this.http.post<ApiResponse>(this.apiUrl, folderPath);
+  postCommit(body: {path: string}): Observable<ApiResponse> {
+    const apiUrl = `${this.baseUrl}commit`;
+    return this.http.post<ApiResponse>(apiUrl, body);
   }
 
-  postRestore(paths: String[]): Observable<ApiResponse> {
-    this.apiUrl = 'http://localhost:8080/api/v1/restore';
-    //let body: String[] = [versionFolderPath, destinationFolderPath];
-    return this.http.post<ApiResponse>(this.apiUrl, paths);
+  postRestore(body: string[]): Observable<ApiResponse> {
+    const apiUrl = `${this.baseUrl}restore`;
+    return this.http.post<ApiResponse>(apiUrl, body);
   }
 }
