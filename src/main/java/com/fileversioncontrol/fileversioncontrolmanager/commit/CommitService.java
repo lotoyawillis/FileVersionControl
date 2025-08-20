@@ -18,10 +18,10 @@ public class CommitService {
             }
             else if (result.contains("is not a directory"))
             {
-                throw new ApiException(HttpStatus.BAD_REQUEST, results, "The request is invalid");
+                throw new ApiException(HttpStatus.BAD_REQUEST, results, "The requested directory is not valid");
             }
             else if ((result.contains("is up to date"))) {
-                throw new ApiException(HttpStatus.NOT_MODIFIED, results, "The requested directory is up to date");
+                throw new ApiException(HttpStatus.CONFLICT, results, "The requested directory is up to date");
             }
         }
         return new Response(HttpStatus.CREATED.value(), results, "All files have been committed");

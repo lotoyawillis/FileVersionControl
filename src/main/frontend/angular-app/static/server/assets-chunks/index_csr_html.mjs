@@ -9,6 +9,6 @@ export default `<!doctype html>
 <body ngcm="">
   <app-root>
   </app-root>
-<script src="main-TKXWO5OY.js" type="module"></script></body>
+<script src="main-I6K525ED.js" type="module"></script></body>
 </html>
 `;

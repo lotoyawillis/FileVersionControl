@@ -8,22 +8,28 @@ export interface ApiResponse {
   message: string | null;
 }
 
+export interface Dictionary<T> {
+  [key: string]: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class ApiService {
-  private apiUrl = 'http://localhost:8080/api/v1/';
+  private baseUrl = 'http://localhost:8080/api/v1/';
 
-  constructor(private http: HttpClient) {}
-
-  postCommit(folderPath: String): Observable<ApiResponse> {
-    this.apiUrl = 'http://localhost:8080/api/v1/commit';
-    return this.http.post<ApiResponse>(this.apiUrl, folderPath);
+  constructor(private http: HttpClient) {
   }
 
-  postRestore(paths: String[]): Observable<ApiResponse> {
-    this.apiUrl = 'http://localhost:8080/api/v1/restore';
-    //let body: String[] = [versionFolderPath, destinationFolderPath];
-    return this.http.post<ApiResponse>(this.apiUrl, paths);
+  postCommit(body: Dictionary<string>): Observable<ApiResponse> {
+    console.log(body)
+    const apiUrl = `${this.baseUrl}commit`;
+    return this.http.post<ApiResponse>(apiUrl, body);
+  }
+
+  postRestore(body: Dictionary<string>): Observable<ApiResponse> {
+    console.log(body)
+    const apiUrl = `${this.baseUrl}restore`;
+    return this.http.post<ApiResponse>(apiUrl, body);
   }
 }

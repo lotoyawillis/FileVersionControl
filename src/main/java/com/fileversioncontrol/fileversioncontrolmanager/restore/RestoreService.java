@@ -9,9 +9,7 @@ import java.util.List;
 
 @Service
 public class RestoreService {
-    public Response restoreFiles(List<String> paths){
-        String versionPath = paths.get(0);
-        String destinationPath = paths.get(1);
+    public Response restoreFiles(String versionPath, String destinationPath){
         int totalUpToDateFiles = 0;
         List<String> results = RestoreManager.Restore(versionPath, destinationPath);
 
@@ -30,8 +28,8 @@ public class RestoreService {
         }
 
         if (totalUpToDateFiles == results.size()) {
-            throw new ApiException(HttpStatus.NOT_MODIFIED, results, "The requested restore directory is up to date");
+            throw new ApiException(HttpStatus.CONFLICT, results, "The requested destination directory is up to date with the version control directory");
         }
-        return new Response(HttpStatus.CREATED.value(), results, "All files have been restored"); // only success case
+        return new Response(HttpStatus.CREATED.value(), results, "All changed files have been restored"); // only success case
     }
 }

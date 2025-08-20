@@ -1,5 +1,5 @@
-import {Component, inject, Injectable} from '@angular/core';
-import {ApiResponse, ApiService} from '../../../services/api-service';
+import {Component} from '@angular/core';
+import {ApiResponse, ApiService, Dictionary} from '../../../services/api-service';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
 
@@ -10,33 +10,30 @@ import {Router} from '@angular/router';
   styleUrl: './restore-component.css',
   standalone: false
 })
-@Injectable({
-  providedIn: 'root'
-})
 export class RestoreComponent {
-  constructor(private apiService: ApiService, private router: Router) {
-    this.router = inject(Router);
-  }
+  constructor(private apiService: ApiService, private router: Router) {}
 
   submit(form: NgForm) {
-    const vcPath = form.value.vcPath;
-    const destinationPath = form.value.destinationPath;
+    if (!form.valid) {
+      return;
+    }
 
-    const paths = [vcPath, destinationPath];
+    //const vcPath = form.value.vcPath;
+    //const destinationPath = form.value.destinationPath;
+
+    const paths: Dictionary<string> = {
+      'vcPath': form.value.vcPath,
+      'destinationPath': form.value.destinationPath
+    };
 
     this.apiService.postRestore(paths).subscribe(
       (response: ApiResponse) => {
         void this.router.navigate(['/success'], {state: {data: response}});
       },
       (error) => {
-        if (error.status === 304 || error.status === 400 || error.status === 500) {
-          void this.router.navigate(['/request_error'], {state: {data: error.error}});
-        } else {
-          void this.router.navigate(['/request_error'], {state: {data: error}});
-        }
+        const data = error.error || error;
+        void this.router.navigate(['/request_error'], { state: { data } });
       }
     );
   }
-
-  ngOnInit() {}
 }
