@@ -1,9 +1,9 @@
 <h2>Error</h2>
-<p>Status: {{responseData?.status ?? 304}}</p>
+<p>Status: {{responseData?.status ?? 0}}</p>
 <ul *ngIf="responseData?.results?.length ?? 0 > 0; else noData">
   <li *ngFor="let result of responseData?.results">{{result}}</li>
 </ul>
-<p>Message: {{ responseData?.message ? responseData?.message : 'The requested directory is up to date' }}</p>
+<p>Message: {{ responseData?.message ? responseData?.message : '' }}</p>
 
 <ng-template #noData>
   <p>No results found.</p>
