@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ApiResponse, ApiService} from '../../../services/api-service';
+import {ApiResponse, ApiService, Dictionary} from '../../../services/api-service';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
 
@@ -18,10 +18,13 @@ export class RestoreComponent {
       return;
     }
 
-    const vcPath = form.value.vcPath;
-    const destinationPath = form.value.destinationPath;
+    //const vcPath = form.value.vcPath;
+    //const destinationPath = form.value.destinationPath;
 
-    const paths = [vcPath, destinationPath];
+    const paths: Dictionary<string> = {
+      'vcPath': form.value.vcPath,
+      'destinationPath': form.value.destinationPath
+    };
 
     this.apiService.postRestore(paths).subscribe(
       (response: ApiResponse) => {

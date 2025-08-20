@@ -1,13 +1,13 @@
 package com.fileversioncontrol.fileversioncontrolmanager.commit.dto;
 
 public class CommitRequest {
-    private String path;
+    private String directoryPath;
 
-    public String getPath() {
-        return path;
+    public String getDirectoryPath() {
+        return directoryPath;
     }
 
-    public void setPath(String path) {
-        this.path = path;
+    public void setDirectoryPath(String directoryPath) {
+        this.directoryPath = directoryPath;
     }
 }

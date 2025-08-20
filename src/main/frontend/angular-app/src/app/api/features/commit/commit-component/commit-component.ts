@@ -1,5 +1,5 @@
 import {Component} from '@angular/core';
-import {ApiResponse, ApiService} from '../../../services/api-service';
+import {ApiResponse, ApiService, Dictionary} from '../../../services/api-service';
 import {NgForm} from '@angular/forms';
 import {Router} from '@angular/router';
 
@@ -18,9 +18,12 @@ export class CommitComponent {
       return;
     }
 
-    const path = form.value.directoryPath;
+    const directoryPath: Dictionary<string> = {
+      'directoryPath': form.value.directoryPath
+    };
+    //const path = {directoryPath};
 
-    this.apiService.postCommit({path}).subscribe(
+    this.apiService.postCommit(directoryPath).subscribe(
       (response: ApiResponse) => {
         void this.router.navigate(['/success'], {state: {data: response}});
       },

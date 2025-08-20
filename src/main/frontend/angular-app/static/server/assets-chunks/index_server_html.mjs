@@ -10,6 +10,6 @@ export default `<!doctype html>
 </script>
   <app-root>
   </app-root>
-<script src="main-37ONVEBA.js" type="module"></script></body>
+<script src="main-I6K525ED.js" type="module"></script></body>
 </html>
 `;
