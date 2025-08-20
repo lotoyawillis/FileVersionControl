@@ -21,7 +21,6 @@ export class CommitComponent {
     const directoryPath: Dictionary<string> = {
       'directoryPath': form.value.directoryPath
     };
-    //const path = {directoryPath};
 
     this.apiService.postCommit(directoryPath).subscribe(
       (response: ApiResponse) => {

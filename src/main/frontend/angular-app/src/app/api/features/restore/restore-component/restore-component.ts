@@ -18,9 +18,6 @@ export class RestoreComponent {
       return;
     }
 
-    //const vcPath = form.value.vcPath;
-    //const destinationPath = form.value.destinationPath;
-
     const paths: Dictionary<string> = {
       'vcPath': form.value.vcPath,
       'destinationPath': form.value.destinationPath
