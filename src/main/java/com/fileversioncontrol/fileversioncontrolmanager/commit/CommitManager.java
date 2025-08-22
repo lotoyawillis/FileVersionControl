@@ -14,7 +14,7 @@ import java.util.List;
 
 
 public class CommitManager {
-    public static List<String> commit(String path) {
+    private static List<String> commit(String path) {
         List<String> results = new ArrayList<>();
 
         String vcPath = pathUtilities.pathBuilder(path, ".vc");
@@ -29,7 +29,7 @@ public class CommitManager {
         return results;
     }
 
-    public static List<String> commitFiles(String directoryPath, String originalDirectoryPath) {
+    private static List<String> commitFiles(String directoryPath, String originalDirectoryPath) {
         List<String> results = new ArrayList<>();
         int versionNumber = 1;
         String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
@@ -42,7 +42,7 @@ public class CommitManager {
         return copyAllFiles(vcDirectoryPath, originalDirectoryPath, results);
     }
 
-    public static List<String> copyAllFiles(String vcDirectoryPath, String originalDirectoryPath, List<String> results) {
+    private static List<String> copyAllFiles(String vcDirectoryPath, String originalDirectoryPath, List<String> results) {
         List<String> allPaths = pathUtilities.getAllPathsInOneLayer(originalDirectoryPath);
 
         for (String path : allPaths) {

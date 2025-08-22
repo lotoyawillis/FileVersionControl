@@ -7,8 +7,41 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Handles the business logic related to committing a directory's files.
+ * <p>
+ * The service commits a directory's files and returns the Response if successful or triggers the exception
+ * that corresponds with the error that happened during the commit attempt.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *   <li>Commit a directory's files</li>
+ * </ul>
+ * <p>
+ * Example Usage:
+ * <pre>{@code
+ * CommitService.commitFiles(path);
+ * }</pre>
+ *
+ * @author Lotoya Willis
+ * @version 1.0
+ */
 @Service
 public class CommitService {
+    /**
+     * Commits a directory's files.
+     * <p>
+     * The method performs the following:
+     * <ul>
+     *     <li>Attempts to commit files</li>
+     *     <li>Evaluates if any errors happened during the commit attempt</li>
+     * </ul>
+     *
+     * @param path the directory with the files to be committed
+     * @return the results Response for the commit
+     *
+     * @throws ApiException if commit fails
+     */
     public Response commitFiles(String path){
         List<String> results = CommitManager.Commit(path);
 
