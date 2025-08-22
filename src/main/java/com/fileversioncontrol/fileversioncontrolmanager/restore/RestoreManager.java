@@ -20,7 +20,7 @@ import java.util.regex.Pattern;
 
 
 public class RestoreManager {
-    public static List<String> restore(String vcSource, String destination) {
+    private static List<String> restore(String vcSource, String destination) {
         List<String> results = new ArrayList<>();
 
         HashMap<Integer, File> map1 = new HashMap<>();
