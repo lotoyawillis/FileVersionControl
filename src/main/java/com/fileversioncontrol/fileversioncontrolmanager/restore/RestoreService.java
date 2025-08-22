@@ -7,8 +7,42 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+/**
+ * Handles the business logic related to restoring a directory's files.
+ * <p>
+ * The service restores a directory's files and returns the Response if successful or triggers the exception
+ * that corresponds with the error that happened during the restore attempt.
+ * <p>
+ * Responsibilities:
+ * <ul>
+ *   <li>Restore a directory's files</li>
+ * </ul>
+ * <p>
+ * Example Usage:
+ * <pre>{@code
+ * RestoreService.restoreFiles(path);
+ * }</pre>
+ *
+ * @author Lotoya Willis
+ * @version 1.0
+ */
 @Service
 public class RestoreService {
+    /**
+     * Restores a directory's previous commit to a destination directory.
+     * <p>
+     * The method performs the following:
+     * <ul>
+     *     <li>Attempts to restore files to a destination directory</li>
+     *     <li>Evaluates if any errors happened during the restore attempt</li>
+     * </ul>
+     *
+     * @param versionPath the version control directory with the files to be restored
+     * @param destinationPath the directory where the restored files should go
+     * @return the results Response for the restore
+     *
+     * @throws ApiException if restore fails
+     */
     public Response restoreFiles(String versionPath, String destinationPath){
         int totalUpToDateFiles = 0;
         List<String> results = RestoreManager.Restore(versionPath, destinationPath);

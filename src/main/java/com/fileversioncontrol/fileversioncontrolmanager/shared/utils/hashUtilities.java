@@ -12,6 +12,32 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+/**
+ * A utility class for creating hash maps and hash strings.
+ * <p>
+ * This class provides static methods to:
+ * <ul>
+ *   <li>Create a hash string from a file's contents</li>
+ *   <li>Create a hash map from a directory</li>
+ * </ul>
+ * <p>
+ * The methods are designed to work with all types of paths
+ *
+ * <p><strong>Example usage:</strong></p>
+ * <pre>{@code
+ * String directoryPath = "C:\\Users\\Documents\\test";
+ * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
+ * HashMap<Integer, File> hashMap = new HashMap<>();
+ *
+ * String hashString = hashUtilities.hashFile(filePath); // Creates a hash string based on a file's contents
+ *
+ * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath, hashMap); // Creates a hash map
+ *                                                                                      // of all a directory's files
+ * }</pre>
+ *
+ * @author Lotoya Willis
+ * @version 1.0
+ */
 public class hashUtilities {
     /**
      * Computes the SHA-256 hash of a file's contents.

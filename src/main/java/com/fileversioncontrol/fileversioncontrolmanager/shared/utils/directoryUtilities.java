@@ -13,6 +13,55 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A utility class for creating a directory, verifying if a path is a version control directory, if a path is a
+ * directory, if a directory is up-to-date or has changed, and obtaining the latest version control directory of
+ * a directory.
+ * <p>
+ * This class provides static methods to:
+ * <ul>
+ *   <li>Create a directory at a path</li>
+ *   <li>Check if a path is a version control directory</li>
+ *   <li>Check if a path is a directory</li>
+ *   <li>Check if a directory is up to date</li>
+ *   <li>Check if a directory has changed</li>
+ *   <li>Obtain the latest version control directory</li>
+ * </ul>
+ * <p>
+ * The methods are designed to work with all types of paths
+ *
+ * <p><strong>Example usage:</strong></p>
+ * <pre>{@code
+ * String newDirectoryPath = "C:\\Users\\Documents\\test\\newDirectory";
+ * String newDirectoryName = "newDirectory";
+ * String vcDirectoryPath = "C:\\Users\\Documents\\test\\.vc\\1";
+ * String directoryPath = "C:\\Users\\Documents\\test";
+ * HashMap<Integer, File> map1 = new HashMap<>();
+ * HashMap<Integer, File> map2 = new HashMap<>();
+ * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath, map1);
+ * HashMap<Integer, File> vcDirectoryHashMap = hashUtilities.createHashMap(vcDirectoryPath, map2);
+ *
+ * directoryUtilities.createDirectory(newDirectoryPath, newDirectoryName); // creates the directory
+ *                                                                      // "C:\\Users\\Documents\\test\\newDirectory"
+ *
+ * boolean isVCDirectoryPathAVCDirectory = directoryUtilities.isAVersionControlNumberDirectory(vcDirectoryPath); // true
+ *
+ * boolean isDirectoryPathADirectory = directoryUtilities.isDirectory(directoryPath); // true
+ *
+ * boolean isDirectoryPathUpToDate = directoryUtilities.isDirectoryUpToDate(directoryPath); // true if the directory has
+ *                                                                                  // not changed; Otherwise, false
+ *
+ * boolean isDirectoryPathChanged = directoryUtilities.isDirectoryChanged(directoryHashMap, vcDirectoryHashMap);
+ * // true if a file in the directoryHashMap has changed compared to the vcDirectoryHashMap; Otherwise, false
+ *
+ * String latestVersionControlDirectory = directoryUtilities.getLatestVersionNumberDirectory(directoryPath);
+ * // returns the path string for the directory with the latest creation date or an empty string if no directories exist
+ * // or an error occurs
+ * }</pre>
+ *
+ * @author Lotoya Willis
+ * @version 1.0
+ */
 public class directoryUtilities {
     /**
      * Attempts to create a directory from a given path and a directory name.

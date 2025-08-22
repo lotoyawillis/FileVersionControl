@@ -6,6 +6,47 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * A utility class for verifying if a file exists or has changed and obtaining its saved path.
+ * <p>
+ * This class provides static methods to:
+ * <ul>
+ *   <li>Check if a file exists at a path</li>
+ *   <li>Check if a file changed (for the commit option)</li>
+ *   <li>Check if a file changed (for the restore option)</li>
+ *   <li>Check if a file's content changed</li>
+ *   <li>Obtain a version control file's saved path</li>
+ * </ul>
+ * <p>
+ * The methods are designed to work with all types of paths
+ *
+ * <p><strong>Example usage:</strong></p>
+ * <pre>{@code
+ * String directoryPath = "C:\\Users\\Documents\\test";
+ * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
+ * String vcDirectoryPath = "C:\\Users\\Documents\\test\\.vc\\1";
+ * String vcFilePath = "C:\\Users\\Documents\\test\\.vc\\1\\testFile.txt";
+ * HashMap<Integer, File> destinationHashMap = hashUtilities.createHashMap(directoryPath);
+ * Map.Entry<Integer, File> vcEntry = new AbstractMap.SimpleEntry<>(1, new File(vcFilePath));
+ *
+ * boolean isFilePathAFile = fileUtilities.isFile(filePath); // true
+ *
+ * boolean isFilePathChanged = fileUtilities.isFileChangedForCommit(filePath); // true if the file at filePath changed;
+ *                                                                          // Otherwise, false
+ *
+ * boolean isFilePathChangedComparedToDestination = fileUtilities.isFileChangedForRestore(vcEntry, destinationHashMap);
+ *                                                  // true if the file has changed compared to its last saved version;
+ *                                                  // Otherwise, false
+ *
+ * boolean isFilePathContentChanged = fileUtilities.isFileContentChanged(filePath, vcFilePath); // true if the file's
+ *                                      // content has changed compared to its last saved version; Otherwise, false
+ *
+ * String vcFileSavedPath = fileUtilities.getVCFileSavedPath(vcFilePath); // "C:\\Users\\Documents\\test\\testFile.txt"
+ * }</pre>
+ *
+ * @author Lotoya Willis
+ * @version 1.0
+ */
 public class fileUtilities {
     /**
      * Checks if the inputted path string leads to a file.
