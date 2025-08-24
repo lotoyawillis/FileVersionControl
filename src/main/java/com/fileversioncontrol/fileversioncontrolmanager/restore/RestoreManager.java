@@ -23,10 +23,8 @@ public class RestoreManager {
     private static List<String> restore(String vcSource, String destination) {
         List<String> results = new ArrayList<>();
 
-        HashMap<Integer, File> map1 = new HashMap<>();
-        HashMap<Integer, File> map2 = new HashMap<>();
-        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource, map1);
-        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination, map2);
+        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource);
+        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination);
 
         File destinationFile = new File(destination);
         String destinationPathString = destinationFile.getAbsolutePath();

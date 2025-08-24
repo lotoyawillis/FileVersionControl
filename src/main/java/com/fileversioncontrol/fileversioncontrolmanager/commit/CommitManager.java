@@ -23,7 +23,7 @@ public class CommitManager {
         if (directoryUtilities.isDirectory(vcPath)) {
             results = commitFiles(vcPath, path);
         } else if (!directoryUtilities.isDirectory(vcPath)) {
-            directoryUtilities.createDirectory(vcPath, ".vc");
+            directoryUtilities.createDirectory(vcPath);
             results = commitFiles(vcPath, path);
         }
         return results;
@@ -32,13 +32,13 @@ public class CommitManager {
     private static List<String> commitFiles(String directoryPath, String originalDirectoryPath) {
         List<String> results = new ArrayList<>();
         int versionNumber = 1;
-        String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
+        String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
         while (directoryUtilities.isDirectory(vcDirectoryPath)) {
             versionNumber = versionNumber + 1;
-            vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, String.valueOf(versionNumber));
+            vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
         }
 
-        directoryUtilities.createDirectory(vcDirectoryPath, Integer.toString(versionNumber));
+        directoryUtilities.createDirectory(vcDirectoryPath);
         return copyAllFiles(vcDirectoryPath, originalDirectoryPath, results);
     }
 
@@ -51,7 +51,7 @@ public class CommitManager {
                 String directoryPath = pathUtilities.pathBuilder(vcDirectoryPath, directoryName);
 
                 if (!directoryName.equals(".vc")) {
-                    directoryUtilities.createDirectory(directoryPath, directoryName);
+                    directoryUtilities.createDirectory(directoryPath);
                     results = copyAllFiles(directoryPath, path, results);
                 }
             } else if (fileUtilities.isFile(path)) {

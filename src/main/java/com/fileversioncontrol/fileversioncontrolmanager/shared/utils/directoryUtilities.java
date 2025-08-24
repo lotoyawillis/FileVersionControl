@@ -33,16 +33,13 @@ import java.util.regex.Pattern;
  * <p><strong>Example usage:</strong></p>
  * <pre>{@code
  * String newDirectoryPath = "C:\\Users\\Documents\\test\\newDirectory";
- * String newDirectoryName = "newDirectory";
  * String vcDirectoryPath = "C:\\Users\\Documents\\test\\.vc\\1";
  * String directoryPath = "C:\\Users\\Documents\\test";
- * HashMap<Integer, File> map1 = new HashMap<>();
- * HashMap<Integer, File> map2 = new HashMap<>();
- * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath, map1);
- * HashMap<Integer, File> vcDirectoryHashMap = hashUtilities.createHashMap(vcDirectoryPath, map2);
+ * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath);
+ * HashMap<Integer, File> vcDirectoryHashMap = hashUtilities.createHashMap(vcDirectoryPath);
  *
- * directoryUtilities.createDirectory(newDirectoryPath, newDirectoryName); // creates the directory
- *                                                                      // "C:\\Users\\Documents\\test\\newDirectory"
+ * directoryUtilities.createDirectory(newDirectoryPath); // creates the directory
+ *                                                       // "C:\\Users\\Documents\\test\\newDirectory"
  *
  * boolean isVCDirectoryPathAVCDirectory = directoryUtilities.isAVersionControlNumberDirectory(vcDirectoryPath); // true
  *
@@ -71,14 +68,15 @@ public class directoryUtilities {
      * If a user does not have permission to create a directory, a permission error message is printed to the console.
      *
      * @param pathString the path to the created directory
-     * @param directoryName the name of the directory being created
      *
      * @throws SecurityException if the user does not have permission to create a directory
-     *
+     * 
+     * @see pathUtilities#name(String) 
      * @see File#mkdir()
      */
-    public static void createDirectory(String pathString, String directoryName) {
+    public static void createDirectory(String pathString) {
         File newDirectory = new File(pathString);
+        String directoryName = pathUtilities.name(pathString);
 
         try {
             if (newDirectory.mkdir()) {
@@ -174,18 +172,16 @@ public class directoryUtilities {
      * @return {@code true} if the directory has not changed since the last commit;
      *          {@code false} otherwise.
      *
-     * @see hashUtilities#createHashMap(String, HashMap)
+     * @see hashUtilities#createHashMap(String)
      * @see #getLatestVersionNumberDirectory(String)
      * @see #isDirectoryChanged(HashMap, HashMap)
      */
     public static boolean isDirectoryUpToDate(String path) {
-        HashMap<Integer, File> currentFiles = new HashMap<>();
-        HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path, currentFiles);
+        HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path);
 
-        HashMap<Integer, File> lastSavedFiles = new HashMap<>();
         String latestVCPath = getLatestVersionNumberDirectory(path);
         if (!latestVCPath.isEmpty()) {
-            HashMap<Integer, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath, lastSavedFiles);
+            HashMap<Integer, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath);
 
             if (currentDirectoryHashMap.size() != latestVersionControlHashMap.size()) {
                 return false;
