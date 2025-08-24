@@ -1,11 +1,18 @@
 # FileVersionControl
 
-## Features
+A full-stack application featuring API endpoints for committing and restoring files
+
+## Overview
+
+The project provides API endpoints to handle commit and restore operations, as well as a frontend application
+for convenient interaction with the API.
+
+### Features
 
 - Commit the files in a directory
 - Restore a previous commit to a specified location
 
-## Tech Stack
+### Tech Stack
 
 - Frontend: Angular
 - Backend: Spring Boot

@@ -1,6 +1,13 @@
 package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.nio.file.FileVisitResult;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -25,7 +32,6 @@ import java.util.List;
  * <pre>{@code
  * String directoryPath = "C:\\Users\\Documents\\test";
  * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
- * List<String> filePathsList = new ArrayList<>();
  *
  * pathUtilities.createDirectoryPathIfItDoesNotExist(filePath); // Creates the directories "C:\\Users\\Documents" and
  *                                                              // "C:\\Users\\Documents\\test" if they do not exist
@@ -34,8 +40,8 @@ import java.util.List;
  *                                                                      // list of all directories in the first layer
  *                                                                      // of "C:\\Users\\Documents\\test"
  *
- * List<String> allFiles = pathUtilities.getAllFilePaths(directoryPath, filePathsList); // A list of all files
- *                                                                                  // in "C:\\Users\\Documents\\test"
+ * List<String> allFiles = pathUtilities.getAllFilePaths(directoryPath); // A list of all files
+ *                                                                       // in "C:\\Users\\Documents\\test"
  *
  * List<String> allPathsInFirstLayer = pathUtilities.getAllPathsInOneLayer(String directoryPath); // A list of
  *                                                                      // all files and directories in the first layer
@@ -67,7 +73,7 @@ public class pathUtilities {
      * @see ArrayList#remove(Object)
      * @see ArrayList#toArray(Object[])
      * @see directoryUtilities#isDirectory(String)
-     * @see directoryUtilities#createDirectory(String, String)
+     * @see directoryUtilities#createDirectory(String)
      */
     public static void createDirectoryPathIfItDoesNotExist(String path) {
         String[] splitPath;
@@ -92,7 +98,7 @@ public class pathUtilities {
         for (String piece : splitPath) {
             partialPath = pathBuilder(partialPath, piece);
             if (!directoryUtilities.isDirectory(partialPath)) {
-                directoryUtilities.createDirectory(partialPath, name(partialPath));
+                directoryUtilities.createDirectory(partialPath);
             }
         }
     }
@@ -137,37 +143,47 @@ public class pathUtilities {
      * Returns a list of absolute path strings of all the files (not directories) contained within an inputted
      * directory.
      * <p></p>
-     * The method calls {@link #getAllPathsInOneLayer(String)} to get all the absolute path strings of the
-     * paths (files and directories) within the first layer of the inputted directory, iterates through those paths,
-     * and checks if the path leads to a file or a directory. If the path is a directory, the method calls itself with
-     * that path and the file path list as the input. If the path is a file, it is added to the list.
+     * The method walks through the paths in the inputted directory. If it encounters a directory, it checks if its name
+     * is {@code .vc}. If it is, it skips that path. Otherwise, it continues to traverse the paths. If it encounters a
+     * file, it is added to the list. If an exception occurs, it returns an empty list.
      *
      * @param originalDirectoryPath the path string of a directory
-     * @param filePathsList the list of file path strings
      * @return the list of the absolute path strings of all the files in a directory
      *
-     * @see #getAllPathsInOneLayer(String)
-     * @see directoryUtilities#isDirectory(String)
+     * @throws SecurityException if the user does not have permission to access a directory
+     * @throws IOException if an I/O error happens while attempting to traverse a directory
+     *
+     * @see java.nio.file.Paths#get(String, String...)
+     * @see Paths#toString()
      * @see #name(String)
      * @see String#equals(Object)
-     * @see fileUtilities#isFile(String)
      * @see java.util.List#add(Object)
      */
-    public static List<String> getAllFilePaths(String originalDirectoryPath, List<String> filePathsList) {
-        List<String> allPaths = getAllPathsInOneLayer(originalDirectoryPath);
+    public static List<String> getAllFilePaths(String originalDirectoryPath) {
+        List<String> filePathsList = new ArrayList<>();
+        Path directory = Paths.get(originalDirectoryPath);
 
-        for (String path : allPaths) {
-            if (directoryUtilities.isDirectory(path)) {
-                String directoryName = name(path);
-
-                if (!directoryName.equals(".vc")) {
-                    getAllFilePaths(path, filePathsList);
+        try {
+            Files.walkFileTree(directory, new SimpleFileVisitor<>() {
+                @Override
+                public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) {
+                    if (name(dir.toString()).equals(".vc")) {
+                        return FileVisitResult.SKIP_SUBTREE;
+                    }
+                    return FileVisitResult.CONTINUE;
                 }
-            } else if (fileUtilities.isFile(path)) {
-                filePathsList.add(path);
-            }
+
+                @Override
+                public FileVisitResult visitFile(Path file, BasicFileAttributes attributes) {
+                    filePathsList.add(file.toString());
+                    return FileVisitResult.CONTINUE;
+                }
+            });
+
+            return filePathsList;
+        } catch (SecurityException | IOException e) {
+            return filePathsList;
         }
-        return filePathsList;
     }
 
     /**

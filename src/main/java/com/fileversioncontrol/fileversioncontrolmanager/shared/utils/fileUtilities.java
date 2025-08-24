@@ -78,8 +78,7 @@ public class fileUtilities {
      * Determines whether the given file from the version control directory has changed compared to the given directory.
      * <p>
      * The method calls {@link #isFileContentChanged(String, String)} if a file with the same key exists in the
-     * inputted directory. If not, it checks to see if a file with the same relative path exists in the inputted
-     * directory and calls {@link #isFileContentChanged(String, String)} if it does. If not, it returns {@code true}
+     * inputted directory. If not, it returns {@code true}
      *
      * @param vcEntry the hash map entry for a file in the version control directory
      * @param currentDirectoryHashMap the hash map created from the inputted directory path
@@ -96,20 +95,9 @@ public class fileUtilities {
             String vcFilePath = vcEntry.getValue().getAbsolutePath();
 
             return isFileContentChanged(currentFilePath, vcFilePath);
-        } else {
-            String vcFilePathString = vcEntry.getValue().getAbsolutePath();
-            String match = getVCFileSavedPath(vcFilePathString);
-
-            if (!match.isEmpty()) {
-                for (Map.Entry<Integer, File> cdEntry : currentDirectoryHashMap.entrySet()) {
-                    String currentFilePathString = cdEntry.getValue().getAbsolutePath();
-                    if (currentFilePathString.contains(match)) {
-                        return isFileContentChanged(currentFilePathString, vcFilePathString);
-                    }
-                }
-            }
-            return true;
         }
+
+        return true;
     }
 
     /**

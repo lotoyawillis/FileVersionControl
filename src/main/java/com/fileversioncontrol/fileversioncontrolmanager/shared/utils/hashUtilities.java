@@ -8,7 +8,6 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
@@ -27,11 +26,10 @@ import java.util.List;
  * <pre>{@code
  * String directoryPath = "C:\\Users\\Documents\\test";
  * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
- * HashMap<Integer, File> hashMap = new HashMap<>();
  *
  * String hashString = hashUtilities.hashFile(filePath); // Creates a hash string based on a file's contents
  *
- * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath, hashMap); // Creates a hash map
+ * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath); // Creates a hash map
  *                                                                                      // of all a directory's files
  * }</pre>
  *
@@ -87,17 +85,16 @@ public class hashUtilities {
      * created from the path string in the directory.
      *
      * @param pathString the inputted directory path string
-     * @param hashMap an existing hash map to hold all the hash code and File pairings
      * @return the updated hash map containing file hash code keys and their associated File objects
      *
-     * @see pathUtilities#getAllFilePaths(String, List)
+     * @see pathUtilities#getAllFilePaths(String)
      * @see pathUtilities#splitCharacterHelper(String)
      * @see String#replaceAll(String, String)
      * @see File#hashCode()
      */
-    public static HashMap<Integer, File> createHashMap(String pathString, HashMap<Integer, File> hashMap) {
-        List<String> paths = new ArrayList<>();
-        List<String> allPaths = pathUtilities.getAllFilePaths(pathString, paths);
+    public static HashMap<Integer, File> createHashMap(String pathString) {
+        HashMap<Integer, File> hashMap = new HashMap<>();
+        List<String> allPaths = pathUtilities.getAllFilePaths(pathString);
         int hash;
         try {
             for (String path : allPaths) {
