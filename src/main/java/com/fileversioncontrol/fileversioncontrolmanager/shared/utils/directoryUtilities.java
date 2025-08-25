@@ -2,7 +2,6 @@ package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
 import java.nio.file.Files;
-import java.nio.file.InvalidPathException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
@@ -137,27 +136,20 @@ public class directoryUtilities {
      * The method handles null or invalid paths. It returns {@code true} if the path string is a directory.
      *
      * @param pathString the path string to be checked
-     *
-     * @throws InvalidPathException if the path string cannot be converted to a Path object.
-     * @throws NullPointerException if the path string is null and attempts to be converted to a Path object. 
-     *
      * @return {@code true} if the path string leads to a directory;
      *         {@code false} otherwise.
      *
-     * @see java.nio.file.Paths#get(String, String...)
-     * @see java.nio.file.Files#exists(java.nio.file.Path, java.nio.file.LinkOption...)
-     * @see java.nio.file.Files#isDirectory(java.nio.file.Path, java.nio.file.LinkOption...)
+     * @throws SecurityException if the user does not have permission to access the directory
+     * @throws NullPointerException if the path string is null and attempts to be converted to a Path object.
+     *
+     * @see File#isDirectory()
      */
     public static boolean isDirectory(String pathString) {
         try {
-            Path path = Paths.get(pathString);
+            File directory = new File(pathString);
 
-            if (Files.exists(path)) {
-                return Files.isDirectory(path);
-            } else {
-                return false;
-            }
-        } catch (InvalidPathException | NullPointerException ex) {
+            return directory.isDirectory();
+        } catch (SecurityException | NullPointerException ex) {
             return false;
         }
     }
