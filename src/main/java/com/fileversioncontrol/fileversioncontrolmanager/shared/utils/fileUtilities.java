@@ -58,18 +58,17 @@ public class fileUtilities {
      * @return {@code true} if the path exists and is a file;
      *          {@code false} otherwise
      *
+     * @throws SecurityException if the user does not have permission to access the file
      * @throws NullPointerException if the inputted path string is null
+     *
+     * @see File#isFile()
      */
     public static boolean isFile(String pathString) {
         try {
             File file = new File(pathString);
 
-            if (file.exists()) {
-                return file.isFile();
-            } else {
-                return false;
-            }
-        } catch (NullPointerException ex) {
+            return file.isFile();
+        } catch (SecurityException | NullPointerException ex) {
             return false;
         }
     }
