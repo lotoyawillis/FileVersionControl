@@ -1,9 +1,9 @@
 package com.fileversioncontrol.fileversioncontrolmanager.restore;
 
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.fileUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.hashUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.pathUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.DirectoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.FileUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.HashUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.PathUtilities;
 
 import java.io.File;
 import java.io.IOException;
@@ -23,14 +23,14 @@ public class RestoreManager {
     private static List<String> restore(String vcSource, String destination) {
         List<String> results = new ArrayList<>();
 
-        HashMap<Integer, File> vcMap = hashUtilities.createHashMap(vcSource);
-        HashMap<Integer, File> destinationMap = hashUtilities.createHashMap(destination);
+        HashMap<Integer, File> vcMap = HashUtilities.createHashMap(vcSource);
+        HashMap<Integer, File> destinationMap = HashUtilities.createHashMap(destination);
 
         File destinationFile = new File(destination);
         String destinationPathString = destinationFile.getAbsolutePath();
 
         for (Map.Entry<Integer, File> vcEntry : vcMap.entrySet()) {
-            boolean isFileChanged = fileUtilities.isFileChangedForRestore(vcEntry, destinationMap, destinationPathString);
+            boolean isFileChanged = FileUtilities.isFileChangedForRestore(vcEntry, destinationMap, destinationPathString);
 
             if (isFileChanged) {
                 File vcFile = vcEntry.getValue();
@@ -40,7 +40,7 @@ public class RestoreManager {
                 Matcher matcher;
 
                 String destinationFilePathString;
-                String delimiter = pathUtilities.splitCharacterHelper(vcFilePathString);
+                String delimiter = PathUtilities.splitCharacterHelper(vcFilePathString);
                 if (delimiter.equals("\\")) {
                     pattern = Pattern.compile("^(.*?\\\\.vc\\\\\\d+)");
                     matcher = pattern.matcher(vcFilePathString);
@@ -61,19 +61,19 @@ public class RestoreManager {
                     }
                 }
 
-                pathUtilities.createDirectoryPathIfItDoesNotExist(destinationFilePathString);
+                PathUtilities.createDirectoryPathIfItDoesNotExist(destinationFilePathString);
 
                 Path vcPath = Paths.get(vcFilePathString);
                 Path destinationPath = Paths.get(destinationFilePathString);
 
                 try {
                     Files.copy(vcPath, destinationPath, StandardCopyOption.REPLACE_EXISTING);
-                    results.add(String.format("%s has been restored\n", pathUtilities.name(vcFilePathString)));
+                    results.add(String.format("%s has been restored\n", PathUtilities.name(vcFilePathString)));
                 } catch (IOException e) {
-                    results.add(String.format("%s has not been restored\n", pathUtilities.name(vcFilePathString)));
+                    results.add(String.format("%s has not been restored\n", PathUtilities.name(vcFilePathString)));
                 }
             } else {
-                results.add(String.format("%s is already up to date\n", pathUtilities.name(vcEntry.getValue().getAbsolutePath())));
+                results.add(String.format("%s is already up to date\n", PathUtilities.name(vcEntry.getValue().getAbsolutePath())));
             }
         }
 
@@ -91,11 +91,11 @@ public class RestoreManager {
         List<String> results = new ArrayList<>();
 
         // Checks the directory path to make sure it exists
-        if (directoryUtilities.isAVersionControlNumberDirectory(versionPath) && directoryUtilities.isDirectory(destinationPath)) {
+        if (DirectoryUtilities.isAVersionControlNumberDirectory(versionPath) && DirectoryUtilities.isDirectory(destinationPath)) {
             results = restore(versionPath, destinationPath);
-        } else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath) && !directoryUtilities.isDirectory(destinationPath)) {
+        } else if (!DirectoryUtilities.isAVersionControlNumberDirectory(versionPath) && !DirectoryUtilities.isDirectory(destinationPath)) {
             results.add(String.format("%s is not a valid version control directory and %s is not a directory", versionPath, destinationPath));
-        }  else if (!directoryUtilities.isAVersionControlNumberDirectory(versionPath)) {
+        }  else if (!DirectoryUtilities.isAVersionControlNumberDirectory(versionPath)) {
             results.add(String.format("%s is not a valid version control directory", versionPath));
         } else {
             results.add(String.format("%s is not a directory", destinationPath));

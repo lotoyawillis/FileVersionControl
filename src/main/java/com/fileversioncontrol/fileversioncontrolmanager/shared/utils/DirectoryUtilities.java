@@ -34,23 +34,23 @@ import java.util.regex.Pattern;
  * String newDirectoryPath = "C:\\Users\\Documents\\test\\newDirectory";
  * String vcDirectoryPath = "C:\\Users\\Documents\\test\\.vc\\1";
  * String directoryPath = "C:\\Users\\Documents\\test";
- * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath);
- * HashMap<Integer, File> vcDirectoryHashMap = hashUtilities.createHashMap(vcDirectoryPath);
+ * HashMap<Integer, File> directoryHashMap = HashUtilities.createHashMap(directoryPath);
+ * HashMap<Integer, File> vcDirectoryHashMap = HashUtilities.createHashMap(vcDirectoryPath);
  *
- * directoryUtilities.createDirectory(newDirectoryPath); // creates the directory
+ * DirectoryUtilities.createDirectory(newDirectoryPath); // creates the directory
  *                                                       // "C:\\Users\\Documents\\test\\newDirectory"
  *
- * boolean isVCDirectoryPathAVCDirectory = directoryUtilities.isAVersionControlNumberDirectory(vcDirectoryPath); // true
+ * boolean isVCDirectoryPathAVCDirectory = DirectoryUtilities.isAVersionControlNumberDirectory(vcDirectoryPath); // true
  *
- * boolean isDirectoryPathADirectory = directoryUtilities.isDirectory(directoryPath); // true
+ * boolean isDirectoryPathADirectory = DirectoryUtilities.isDirectory(directoryPath); // true
  *
- * boolean isDirectoryPathUpToDate = directoryUtilities.isDirectoryUpToDate(directoryPath); // true if the directory has
+ * boolean isDirectoryPathUpToDate = DirectoryUtilities.isDirectoryUpToDate(directoryPath); // true if the directory has
  *                                                                                  // not changed; Otherwise, false
  *
- * boolean isDirectoryPathChanged = directoryUtilities.isDirectoryChanged(directoryHashMap, vcDirectoryHashMap);
+ * boolean isDirectoryPathChanged = DirectoryUtilities.isDirectoryChanged(directoryHashMap, vcDirectoryHashMap);
  * // true if a file in the directoryHashMap has changed compared to the vcDirectoryHashMap; Otherwise, false
  *
- * String latestVersionControlDirectory = directoryUtilities.getLatestVersionNumberDirectory(directoryPath);
+ * String latestVersionControlDirectory = DirectoryUtilities.getLatestVersionNumberDirectory(directoryPath);
  * // returns the path string for the directory with the latest creation date or an empty string if no directories exist
  * // or an error occurs
  * }</pre>
@@ -58,7 +58,7 @@ import java.util.regex.Pattern;
  * @author Lotoya Willis
  * @version 1.0
  */
-public class directoryUtilities {
+public class DirectoryUtilities {
     /**
      * Attempts to create a directory from a given path and a directory name.
      * <p>
@@ -70,12 +70,12 @@ public class directoryUtilities {
      *
      * @throws SecurityException if the user does not have permission to create a directory
      * 
-     * @see pathUtilities#name(String) 
+     * @see PathUtilities#name(String)
      * @see File#mkdir()
      */
     public static void createDirectory(String pathString) {
         File newDirectory = new File(pathString);
-        String directoryName = pathUtilities.name(pathString);
+        String directoryName = PathUtilities.name(pathString);
 
         try {
             if (newDirectory.mkdir()) {
@@ -106,7 +106,7 @@ public class directoryUtilities {
      * @return {@code true} if the path string matches the expected version control directory format;
      *         {@code false} otherwise
      *
-     * @see pathUtilities#splitCharacterHelper(String)
+     * @see PathUtilities#splitCharacterHelper(String)
      * @see java.util.regex.Pattern#compile(String)
      * @see java.util.regex.Pattern#matcher(CharSequence)
      * @see Matcher#find()
@@ -115,7 +115,7 @@ public class directoryUtilities {
     public static boolean isAVersionControlNumberDirectory(String pathString) {
         Pattern pattern;
 
-        String delimiter = pathUtilities.splitCharacterHelper(pathString);
+        String delimiter = PathUtilities.splitCharacterHelper(pathString);
         if (delimiter.equals("\\")) {
             pattern = Pattern.compile("^[^\\\\].*\\\\[^\\\\]+\\\\.vc\\\\\\d+\\\\?$");
         } else {
@@ -164,16 +164,16 @@ public class directoryUtilities {
      * @return {@code true} if the directory has not changed since the last commit;
      *          {@code false} otherwise.
      *
-     * @see hashUtilities#createHashMap(String)
+     * @see HashUtilities#createHashMap(String)
      * @see #getLatestVersionNumberDirectory(String)
      * @see #isDirectoryChanged(HashMap, HashMap)
      */
     public static boolean isDirectoryUpToDate(String path) {
-        HashMap<Integer, File> currentDirectoryHashMap = hashUtilities.createHashMap(path);
+        HashMap<Integer, File> currentDirectoryHashMap = HashUtilities.createHashMap(path);
 
         String latestVCPath = getLatestVersionNumberDirectory(path);
         if (!latestVCPath.isEmpty()) {
-            HashMap<Integer, File> latestVersionControlHashMap = hashUtilities.createHashMap(latestVCPath);
+            HashMap<Integer, File> latestVersionControlHashMap = HashUtilities.createHashMap(latestVCPath);
 
             if (currentDirectoryHashMap.size() != latestVersionControlHashMap.size()) {
                 return false;
@@ -188,18 +188,18 @@ public class directoryUtilities {
      * Determines if any files in the inputted directory have been changed since the last commit
      * <p>
      * The method loops through the hash map created from the files in the inputted directory and calls the
-     * fileUtilities.isFileChangedForCommit method for each item
+     * FileUtilities.isFileChangedForCommit method for each item
      *
      * @param currentDirectoryHashMap the hash map created from the path of the directory inputted when commit is requested
      * @param vcDirectoryHashMap the hash map created from the path of the latest version control directory
      * @return {@code true} if at least one file has changed;
      *          {@code false} otherwise.
      *
-     * @see fileUtilities#isFileChangedForCommit(Map.Entry, HashMap)
+     * @see FileUtilities#isFileChangedForCommit(Map.Entry, HashMap)
      */
     public static boolean isDirectoryChanged(HashMap<Integer, File> currentDirectoryHashMap, HashMap<Integer, File> vcDirectoryHashMap) {
         for (Map.Entry<Integer, File> vcEntry : vcDirectoryHashMap.entrySet()) {
-            boolean isFileChanged = fileUtilities.isFileChangedForCommit(vcEntry, currentDirectoryHashMap);
+            boolean isFileChanged = FileUtilities.isFileChangedForCommit(vcEntry, currentDirectoryHashMap);
             if (isFileChanged) {
                 return true;
             }
@@ -210,7 +210,7 @@ public class directoryUtilities {
     /**
      * Finds and returns the most recently created version control directory under the {@code .vc} directory.
      * <p>
-     * The method builds the path to the {@code .vc} directory using {@link pathUtilities#pathBuilder(String, String)},
+     * The method builds the path to the {@code .vc} directory using {@link PathUtilities#pathBuilder(String, String)},
      * checks if the directory exists, then loops through the directories in its first layer. If successful, it returns
      * the directory path that has the latest creation time; Otherwise, it returns an empty string
      *
@@ -220,9 +220,9 @@ public class directoryUtilities {
      * @throws UnsupportedOperationException if the class given to Files.readAttributes is not supported
      * @throws SecurityException if the user does not have permission to read the attributes of a directory
      *
-     * @see pathUtilities#pathBuilder(String, String)
+     * @see PathUtilities#pathBuilder(String, String)
      * @see #isDirectory(String)
-     * @see pathUtilities#getAllDirectoryPathsInOneLayer(String)
+     * @see PathUtilities#getAllDirectoryPathsInOneLayer(String)
      * @see java.nio.file.attribute.FileTime#fromMillis(long)
      * @see java.nio.file.Paths#get(String, String...)
      * @see java.nio.file.Files#readAttributes(java.nio.file.Path, Class, java.nio.file.LinkOption...)
@@ -230,9 +230,9 @@ public class directoryUtilities {
      * @see BasicFileAttributes#creationTime()
      */
     public static String getLatestVersionNumberDirectory(String path) {
-        String vcPath = pathUtilities.pathBuilder(path, ".vc");
+        String vcPath = PathUtilities.pathBuilder(path, ".vc");
         if (isDirectory(vcPath)) {
-            List<String> directories = pathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
+            List<String> directories = PathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
             FileTime latestCreationTime = FileTime.fromMillis(0);
             String latestDirectory = "";
 

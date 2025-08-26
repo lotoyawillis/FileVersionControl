@@ -26,28 +26,28 @@ import java.util.regex.Pattern;
  * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
  * String vcDirectoryPath = "C:\\Users\\Documents\\test\\.vc\\1";
  * String vcFilePath = "C:\\Users\\Documents\\test\\.vc\\1\\testFile.txt";
- * HashMap<Integer, File> destinationHashMap = hashUtilities.createHashMap(directoryPath);
+ * HashMap<Integer, File> destinationHashMap = HashUtilities.createHashMap(directoryPath);
  * Map.Entry<Integer, File> vcEntry = new AbstractMap.SimpleEntry<>(1, new File(vcFilePath));
  *
- * boolean isFilePathAFile = fileUtilities.isFile(filePath); // true
+ * boolean isFilePathAFile = FileUtilities.isFile(filePath); // true
  *
- * boolean isFilePathChanged = fileUtilities.isFileChangedForCommit(filePath); // true if the file at filePath changed;
+ * boolean isFilePathChanged = FileUtilities.isFileChangedForCommit(filePath); // true if the file at filePath changed;
  *                                                                          // Otherwise, false
  *
- * boolean isFilePathChangedComparedToDestination = fileUtilities.isFileChangedForRestore(vcEntry, destinationHashMap);
+ * boolean isFilePathChangedComparedToDestination = FileUtilities.isFileChangedForRestore(vcEntry, destinationHashMap);
  *                                                  // true if the file has changed compared to its last saved version;
  *                                                  // Otherwise, false
  *
- * boolean isFilePathContentChanged = fileUtilities.isFileContentChanged(filePath, vcFilePath); // true if the file's
+ * boolean isFilePathContentChanged = FileUtilities.isFileContentChanged(filePath, vcFilePath); // true if the file's
  *                                      // content has changed compared to its last saved version; Otherwise, false
  *
- * String vcFileSavedPath = fileUtilities.getVCFileSavedPath(vcFilePath); // "C:\\Users\\Documents\\test\\testFile.txt"
+ * String vcFileSavedPath = FileUtilities.getVCFileSavedPath(vcFilePath); // "C:\\Users\\Documents\\test\\testFile.txt"
  * }</pre>
  *
  * @author Lotoya Willis
  * @version 1.0
  */
-public class fileUtilities {
+public class FileUtilities {
     /**
      * Checks if the inputted path string leads to a file.
      * <p>
@@ -114,7 +114,7 @@ public class fileUtilities {
      * 
      * @see #isFileContentChanged(String, String) 
      * @see #getVCFileSavedPath(String) 
-     * @see pathUtilities#splitCharacterHelper(String) 
+     * @see PathUtilities#splitCharacterHelper(String)
      * @see String#replace(CharSequence, CharSequence) 
      * @see java.util.regex.Pattern#compile(String) 
      * @see java.util.regex.Pattern#matcher(CharSequence) 
@@ -132,7 +132,7 @@ public class fileUtilities {
 
             if (!match.isEmpty()) {
                 Pattern destinationPattern;
-                String delimiter = pathUtilities.splitCharacterHelper(destinationPathString);
+                String delimiter = PathUtilities.splitCharacterHelper(destinationPathString);
 
                 if (delimiter.equals("\\")) {
                     destinationPathString = destinationPathString.replace("\\", "\\\\");
@@ -159,7 +159,7 @@ public class fileUtilities {
     /**
      * Compares the content of two files by hashing them.
      * <p>
-     * The method takes in two file path strings, calls {@link hashUtilities#hashFile(String)} on both strings,
+     * The method takes in two file path strings, calls {@link HashUtilities#hashFile(String)} on both strings,
      * and saves their hash values. If both hashes are not equal, the method returns {@code true};
      * Otherwise (if hashing fails or if both hashes are equal), it returns {@code false}.
      *
@@ -168,13 +168,13 @@ public class fileUtilities {
      * @return {@code true} if file contents changed; 
      *          {@code false} otherwise.
      *          
-     * @see hashUtilities#hashFile(String) 
+     * @see HashUtilities#hashFile(String)
      * @see String#equals(Object) 
      */
     public static boolean isFileContentChanged(String currentFilePath, String vcFilePath) {
         try {
-            String currentFileHash = hashUtilities.hashFile(currentFilePath);
-            String vcFileHash = hashUtilities.hashFile(vcFilePath);
+            String currentFileHash = HashUtilities.hashFile(currentFilePath);
+            String vcFileHash = HashUtilities.hashFile(vcFilePath);
             return !currentFileHash.equals(vcFileHash);
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -195,13 +195,13 @@ public class fileUtilities {
      * @return the saved relative path of the version-controlled file or an empty string, if a relative path is
      * not found.
      *
-     * @see pathUtilities#splitCharacterHelper(String)
+     * @see PathUtilities#splitCharacterHelper(String)
      * @see java.util.regex.Pattern#compile(String)
      * @see java.util.regex.Pattern#matcher(CharSequence)
      */
     public static String getVCFileSavedPath(String vcFilePathString) {
         Pattern pattern;
-        String delimiter = pathUtilities.splitCharacterHelper(vcFilePathString);
+        String delimiter = PathUtilities.splitCharacterHelper(vcFilePathString);
         if (delimiter.equals("\\")) {
             pattern = Pattern.compile(".*\\\\\\.vc\\\\\\d+\\\\(.*)");
         } else {
