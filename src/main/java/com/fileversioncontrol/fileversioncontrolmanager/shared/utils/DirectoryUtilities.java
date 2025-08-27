@@ -234,9 +234,25 @@ public class DirectoryUtilities {
         if (isDirectory(vcPath)) {
             List<String> directories = PathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
             FileTime latestCreationTime = FileTime.fromMillis(0);
+            String latestDirectoryNumber = "0";
             String latestDirectory = "";
 
             for (String directory : directories) {
+                Pattern pattern;
+                String delimiter = PathUtilities.splitCharacterHelper(directory);
+                if (delimiter.equals("\\")) {
+                    pattern = Pattern.compile("\\\\\\.vc\\\\(\\d+)\\\\?");
+                } else {
+                    pattern = Pattern.compile("/.vc/(\\d+)/?");
+                }
+
+                Matcher matcher = pattern.matcher(directory);
+                if (matcher.find()) {
+                    return matcher.group(1);
+                } else {
+                    return "";
+                }
+                /*
                 Path filePath = Paths.get(directory);
                 try {
                     BasicFileAttributes attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
@@ -249,6 +265,8 @@ public class DirectoryUtilities {
                     System.out.println("Could not read directory attributes");
                     return "";
                 }
+
+                 */
             }
             return latestDirectory;
         }

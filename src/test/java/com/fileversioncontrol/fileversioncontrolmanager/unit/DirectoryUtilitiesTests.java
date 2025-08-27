@@ -4,6 +4,7 @@ import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.io.File;
@@ -14,13 +15,14 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 public class DirectoryUtilitiesTests {
-    private static Path tempDirectory;
+    @TempDir
+    Path tempDirectory;
 
+    /*
     @BeforeAll
     static void setUp() throws Exception {
         tempDirectory = Files.createTempDirectory("tempRoot");
@@ -31,6 +33,8 @@ public class DirectoryUtilitiesTests {
         File directory = new File(tempDirectory.toString());
         FileUtils.cleanDirectory(directory);
     }
+
+     */
 
     @Test
     void testCreateDirectory_success() {
@@ -62,7 +66,7 @@ public class DirectoryUtilitiesTests {
     }
 
     @Test
-    void testIsAVersionControlNumberDirectory_success() {
+    void testIsAVersionControlNumberDirectory_true() {
         String versionControlDirectoryPathString = tempDirectory.resolve(".vc").resolve("1").toString();
         File directory = new File(versionControlDirectoryPathString);
         boolean isCreated = directory.mkdirs();
@@ -72,13 +76,13 @@ public class DirectoryUtilitiesTests {
     }
 
     @Test
-    void testIsAVersionControlNumberDirectory_invalidVersionControlPath() {
+    void testIsAVersionControlNumberDirectory_false() {
         String versionControlDirectoryPathString = tempDirectory.resolve("invalidVersionControlDirectory").toString();
         assertFalse(DirectoryUtilities.isAVersionControlNumberDirectory(versionControlDirectoryPathString));
     }
 
     @Test
-    void testIsDirectory_success() {
+    void testIsDirectory_true() {
         String directoryPathString = tempDirectory.resolve("newDirectory").toString();
         File directory = new File(directoryPathString);
         boolean isCreated = directory.mkdir();
@@ -88,7 +92,7 @@ public class DirectoryUtilitiesTests {
     }
 
     @Test
-    void testIsDirectory_invalidDirectory() {
+    void testIsDirectory_false() {
         String directoryPathString = tempDirectory.resolve("invalidDirectory").toString();
         assertFalse(DirectoryUtilities.isDirectory(directoryPathString));
     }
@@ -103,19 +107,18 @@ public class DirectoryUtilitiesTests {
 
         List<String> content = List.of("This is the first sentence.", "This is the second sentence.", "This is the third sentence.");
 
+        // Creates and writes to a file in the version control directory
         Path versionControlPath = Paths.get(versionControlDirectoryPathString);
         File vcTestFile = new File(versionControlPath.resolve("test_file.txt").toString());
-
         boolean isVCFileCreated = vcTestFile.createNewFile();
         assertTrue(isVCFileCreated);
         Path vcTestFilePath = Paths.get(vcTestFile.getAbsolutePath());
         Files.write(vcTestFilePath, content);
 
-        // Create a directory to check with the same file and file contents as the version control directory
+        // Creates and writes to a file with the same name and content as the one in the version control directory
         String directoryPathString = tempDirectory.resolve("newDirectory").toString();
         Path directoryPath = Paths.get(directoryPathString);
         File directoryTestFile = new File(directoryPath.resolve("test_file.txt").toString());
-
         boolean isDirectoryFileCreated = directoryTestFile.createNewFile();
         assertTrue(isDirectoryFileCreated);
         Path directoryTestFilePath = Paths.get(directoryTestFile.getAbsolutePath());
@@ -135,19 +138,18 @@ public class DirectoryUtilitiesTests {
         List<String> content = List.of("This is the first sentence.", "This is the second sentence.", "This is the third sentence.");
         List<String> differentContent = List.of("This is the first sentence.", "This is the second sentence.");
 
+        // Creates and writes to a file in the version control directory
         Path versionControlPath = Paths.get(versionControlDirectoryPathString);
         File vcTestFile = new File(versionControlPath.resolve("test_file.txt").toString());
-
         boolean isVCFileCreated = vcTestFile.createNewFile();
         assertTrue(isVCFileCreated);
         Path vcTestFilePath = Paths.get(vcTestFile.getAbsolutePath());
         Files.write(vcTestFilePath, content);
 
-        // Create a directory to check with file changes compared to the version control directory
+        // Creates and writes different content to a file with the same name as the one in the version control directory
         String directoryPathString = tempDirectory.resolve("newDirectory").toString();
         Path directoryPath = Paths.get(directoryPathString);
         File directoryTestFile = new File(directoryPath.resolve("test_file.txt").toString());
-
         boolean isDirectoryFileCreated = directoryTestFile.createNewFile();
         assertTrue(isDirectoryFileCreated);
         Path directoryTestFilePath = Paths.get(directoryTestFile.getAbsolutePath());
@@ -170,9 +172,9 @@ public class DirectoryUtilitiesTests {
         List<String> content = List.of("This is the first sentence.", "This is the second sentence.", "This is the third sentence.");
         List<String> differentContent = List.of("This is the first sentence.", "This is the second sentence.");
 
+        // Creates and writes to a file in the version control directory
         Path versionControlPath = Paths.get(versionControlDirectoryPathString);
         File vcTestFile = new File(versionControlPath.resolve("test_file.txt").toString());
-
         boolean isVCFileCreated = vcTestFile.createNewFile();
         assertTrue(isVCFileCreated);
         Path vcTestFilePath = Paths.get(vcTestFile.getAbsolutePath());
@@ -182,11 +184,10 @@ public class DirectoryUtilitiesTests {
         File originalPathFile = new File(vcTestFile.getAbsolutePath().replaceAll("\\\\.vc\\\\\\d+", "").replaceAll("/.vc/\\d+", ""));
         vcHashMap.put(originalPathFile.hashCode(), vcTestFile);
 
-        // Create a directory to check with file changes compared to the version control directory
+        // Creates and writes different content to a file with the same name as the one in the version control directory
         String directoryPathString = tempDirectory.resolve("newDirectory").toString();
         Path directoryPath = Paths.get(directoryPathString);
         File directoryTestFile = new File(directoryPath.resolve("test_file.txt").toString());
-
         boolean isDirectoryFileCreated = directoryTestFile.createNewFile();
         assertTrue(isDirectoryFileCreated);
         Path directoryTestFilePath = Paths.get(directoryTestFile.getAbsolutePath());
@@ -211,9 +212,9 @@ public class DirectoryUtilitiesTests {
 
         List<String> content = List.of("This is the first sentence.", "This is the second sentence.", "This is the third sentence.");
 
+        // Creates and writes to a file in the version control directory
         Path versionControlPath = Paths.get(versionControlDirectoryPathString);
         File vcTestFile = new File(versionControlPath.resolve("test_file.txt").toString());
-
         boolean isVCFileCreated = vcTestFile.createNewFile();
         assertTrue(isVCFileCreated);
         Path vcTestFilePath = Paths.get(vcTestFile.getAbsolutePath());
@@ -223,11 +224,10 @@ public class DirectoryUtilitiesTests {
         File originalPathFile = new File(vcTestFile.getAbsolutePath().replaceAll("\\\\.vc\\\\\\d+", "").replaceAll("/.vc/\\d+", ""));
         vcHashMap.put(originalPathFile.hashCode(), vcTestFile);
 
-        // Create a directory to check with the same file and file contents as the version control directory
+        // Creates and writes to a file with the same name and content as the one in the version control directory
         String directoryPathString = tempDirectory.resolve("newDirectory").toString();
         Path directoryPath = Paths.get(directoryPathString);
         File directoryTestFile = new File(directoryPath.resolve("test_file.txt").toString());
-
         boolean isDirectoryFileCreated = directoryTestFile.createNewFile();
         assertTrue(isDirectoryFileCreated);
         Path directoryTestFilePath = Paths.get(directoryTestFile.getAbsolutePath());
@@ -237,5 +237,43 @@ public class DirectoryUtilitiesTests {
         directoryHashMap.put(directoryTestFile.hashCode(), directoryTestFile);
 
         assertFalse(DirectoryUtilities.isDirectoryChanged(directoryHashMap, vcHashMap));
+    }
+
+    @Test
+    void testGetLatestVersionControlDirectory_success() {
+        // Create two version control directories
+        String firstVersionControlDirectoryPathString = tempDirectory.resolve("newDirectory").resolve(".vc").resolve("1").toString();
+        File firstVersionControlDirectory = new File(firstVersionControlDirectoryPathString);
+        boolean areDirectoriesCreated = firstVersionControlDirectory.mkdirs();
+        assertTrue(areDirectoriesCreated);
+
+        String secondVersionControlDirectoryPathString = tempDirectory.resolve("newDirectory").resolve(".vc").resolve("2").toString();
+        File secondVersionControlDirectory = new File(secondVersionControlDirectoryPathString);
+        areDirectoriesCreated = secondVersionControlDirectory.mkdirs();
+        assertTrue(areDirectoriesCreated);
+
+        // Create a path string for the directory that contains the version control directories
+        String directoryPathString = tempDirectory.resolve("newDirectory").toString();
+
+        assertEquals(secondVersionControlDirectoryPathString, DirectoryUtilities.getLatestVersionNumberDirectory(directoryPathString));
+    }
+
+    @Test
+    void testGetLatestVersionControlDirectory_noVersionControlDirectoryFound() {
+        // Create two version control directories
+        String firstVersionControlDirectoryPathString = tempDirectory.resolve("newDirectory").resolve("subdirectory").resolve("1").toString();
+        File firstVersionControlDirectory = new File(firstVersionControlDirectoryPathString);
+        boolean areDirectoriesCreated = firstVersionControlDirectory.mkdirs();
+        assertTrue(areDirectoriesCreated);
+
+        String secondVersionControlDirectoryPathString = tempDirectory.resolve("newDirectory").resolve("subdirectory").resolve("2").toString();
+        File secondVersionControlDirectory = new File(secondVersionControlDirectoryPathString);
+        areDirectoriesCreated = secondVersionControlDirectory.mkdirs();
+        assertTrue(areDirectoriesCreated);
+
+        // Create a path string for the directory that contains the version control directories
+        String directoryPathString = tempDirectory.resolve("newDirectory").toString();
+
+        assertEquals("", DirectoryUtilities.getLatestVersionNumberDirectory(directoryPathString));
     }
 }
