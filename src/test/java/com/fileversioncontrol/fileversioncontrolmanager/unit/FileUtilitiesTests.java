@@ -1,9 +1,6 @@
 package com.fileversioncontrol.fileversioncontrolmanager.unit;
 
 import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.FileUtilities;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -22,20 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class FileUtilitiesTests {
     @TempDir
     Path tempDirectory;
-
-    /*
-    @BeforeAll
-    static void setUp() throws Exception {
-        tempDirectory = Files.createTempDirectory("tempRoot");
-    }
-
-    @AfterAll
-    static void cleanUp() throws Exception {
-        File directory = new File(tempDirectory.toString());
-        FileUtils.cleanDirectory(directory);
-    }
-
-     */
 
     @Test
     void testIsFile_true() throws IOException {

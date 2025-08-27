@@ -1,11 +1,6 @@
 package com.fileversioncontrol.fileversioncontrolmanager.shared.utils;
 
 import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
-import java.nio.file.attribute.FileTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -208,32 +203,32 @@ public class DirectoryUtilities {
     }
 
     /**
-     * Finds and returns the most recently created version control directory under the {@code .vc} directory.
+     * Finds and returns the highest version numbered version control directory under the {@code .vc} directory.
      * <p>
      * The method builds the path to the {@code .vc} directory using {@link PathUtilities#pathBuilder(String, String)},
      * checks if the directory exists, then loops through the directories in its first layer. If successful, it returns
-     * the directory path that has the latest creation time; Otherwise, it returns an empty string
+     * the directory path that has the latest version number; Otherwise, it returns an empty string
      *
      * @param path the path string of the directory inputted when commit is requested
      * @return the path string of the latest version control directory or an empty string if not found
      *
-     * @throws UnsupportedOperationException if the class given to Files.readAttributes is not supported
-     * @throws SecurityException if the user does not have permission to read the attributes of a directory
+     * @throws java.util.regex.PatternSyntaxException if the pattern being compiled is not a valid regex expression
+     * @throws NumberFormatException if the string being parsed does not contain a parsable integer
      *
      * @see PathUtilities#pathBuilder(String, String)
      * @see #isDirectory(String)
      * @see PathUtilities#getAllDirectoryPathsInOneLayer(String)
-     * @see java.nio.file.attribute.FileTime#fromMillis(long)
-     * @see java.nio.file.Paths#get(String, String...)
-     * @see java.nio.file.Files#readAttributes(java.nio.file.Path, Class, java.nio.file.LinkOption...)
-     * @see java.nio.file.attribute.FileTime#compareTo(FileTime)
-     * @see BasicFileAttributes#creationTime()
+     * @see PathUtilities#splitCharacterHelper(String)
+     * @see java.util.regex.Pattern#compile(String)
+     * @see java.util.regex.Pattern#matcher(CharSequence)
+     * @see Matcher#find()
+     * @see Integer#parseInt(String)
+     * @see Matcher#group(int)
      */
     public static String getLatestVersionNumberDirectory(String path) {
         String vcPath = PathUtilities.pathBuilder(path, ".vc");
         if (isDirectory(vcPath)) {
             List<String> directories = PathUtilities.getAllDirectoryPathsInOneLayer(vcPath);
-            FileTime latestCreationTime = FileTime.fromMillis(0);
             String latestDirectoryNumber = "0";
             String latestDirectory = "";
 
@@ -247,26 +242,10 @@ public class DirectoryUtilities {
                 }
 
                 Matcher matcher = pattern.matcher(directory);
-                if (matcher.find()) {
-                    return matcher.group(1);
-                } else {
-                    return "";
+                if (matcher.find() && Integer.parseInt(matcher.group(1)) > Integer.parseInt(latestDirectoryNumber)) {
+                    latestDirectoryNumber = matcher.group(1);
+                    latestDirectory = directory;
                 }
-                /*
-                Path filePath = Paths.get(directory);
-                try {
-                    BasicFileAttributes attributes = Files.readAttributes(filePath, BasicFileAttributes.class);
-                    if (latestCreationTime.compareTo(attributes.creationTime()) < 0) {
-                        latestCreationTime = attributes.creationTime();
-                        latestDirectory = directory;
-                    }
-                } catch (Exception e) {
-                    System.out.println(e.getMessage());
-                    System.out.println("Could not read directory attributes");
-                    return "";
-                }
-
-                 */
             }
             return latestDirectory;
         }

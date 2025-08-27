@@ -1,8 +1,5 @@
 package com.fileversioncontrol.fileversioncontrolmanager.unit;
 import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.DirectoryUtilities;
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,20 +18,6 @@ import static org.junit.jupiter.api.Assertions.*;
 public class DirectoryUtilitiesTests {
     @TempDir
     Path tempDirectory;
-
-    /*
-    @BeforeAll
-    static void setUp() throws Exception {
-        tempDirectory = Files.createTempDirectory("tempRoot");
-    }
-
-    @AfterAll
-    static void cleanUp() throws Exception {
-        File directory = new File(tempDirectory.toString());
-        FileUtils.cleanDirectory(directory);
-    }
-
-     */
 
     @Test
     void testCreateDirectory_success() {
