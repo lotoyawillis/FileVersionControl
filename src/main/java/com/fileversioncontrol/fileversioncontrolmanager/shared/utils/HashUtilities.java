@@ -27,16 +27,16 @@ import java.util.List;
  * String directoryPath = "C:\\Users\\Documents\\test";
  * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
  *
- * String hashString = hashUtilities.hashFile(filePath); // Creates a hash string based on a file's contents
+ * String hashString = HashUtilities.hashFile(filePath); // Creates a hash string based on a file's contents
  *
- * HashMap<Integer, File> directoryHashMap = hashUtilities.createHashMap(directoryPath); // Creates a hash map
+ * HashMap<Integer, File> directoryHashMap = HashUtilities.createHashMap(directoryPath); // Creates a hash map
  *                                                                                      // of all a directory's files
  * }</pre>
  *
  * @author Lotoya Willis
  * @version 1.0
  */
-public class hashUtilities {
+public class HashUtilities {
     /**
      * Computes the SHA-256 hash of a file's contents.
      * <p>
@@ -87,19 +87,19 @@ public class hashUtilities {
      * @param pathString the inputted directory path string
      * @return the updated hash map containing file hash code keys and their associated File objects
      *
-     * @see pathUtilities#getAllFilePaths(String)
-     * @see pathUtilities#splitCharacterHelper(String)
+     * @see PathUtilities#getAllFilePaths(String)
+     * @see PathUtilities#splitCharacterHelper(String)
      * @see String#replaceAll(String, String)
      * @see File#hashCode()
      */
     public static HashMap<Integer, File> createHashMap(String pathString) {
         HashMap<Integer, File> hashMap = new HashMap<>();
-        List<String> allPaths = pathUtilities.getAllFilePaths(pathString);
+        List<String> allPaths = PathUtilities.getAllFilePaths(pathString);
         int hash;
         try {
             for (String path : allPaths) {
                 String originalPath;
-                String delimiter = pathUtilities.splitCharacterHelper(path);
+                String delimiter = PathUtilities.splitCharacterHelper(path);
                 if (delimiter.equals("\\")) {
                     originalPath = path.replaceAll("\\\\.vc\\\\\\d+", "");
                 } else {

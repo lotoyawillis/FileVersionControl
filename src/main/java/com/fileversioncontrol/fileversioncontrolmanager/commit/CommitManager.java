@@ -1,8 +1,8 @@
 package com.fileversioncontrol.fileversioncontrolmanager.commit;
 
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.directoryUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.fileUtilities;
-import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.pathUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.DirectoryUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.PathUtilities;
+import com.fileversioncontrol.fileversioncontrolmanager.shared.utils.FileUtilities;
 
 import java.io.IOException;
 import java.nio.file.Files;
@@ -17,13 +17,13 @@ public class CommitManager {
     private static List<String> commit(String path) {
         List<String> results = new ArrayList<>();
 
-        String vcPath = pathUtilities.pathBuilder(path, ".vc");
+        String vcPath = PathUtilities.pathBuilder(path, ".vc");
 
         // Checks if the .vc directory exists
-        if (directoryUtilities.isDirectory(vcPath)) {
+        if (DirectoryUtilities.isDirectory(vcPath)) {
             results = commitFiles(vcPath, path);
-        } else if (!directoryUtilities.isDirectory(vcPath)) {
-            directoryUtilities.createDirectory(vcPath);
+        } else if (!DirectoryUtilities.isDirectory(vcPath)) {
+            DirectoryUtilities.createDirectory(vcPath);
             results = commitFiles(vcPath, path);
         }
         return results;
@@ -32,31 +32,31 @@ public class CommitManager {
     private static List<String> commitFiles(String directoryPath, String originalDirectoryPath) {
         List<String> results = new ArrayList<>();
         int versionNumber = 1;
-        String vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
-        while (directoryUtilities.isDirectory(vcDirectoryPath)) {
+        String vcDirectoryPath = PathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
+        while (DirectoryUtilities.isDirectory(vcDirectoryPath)) {
             versionNumber = versionNumber + 1;
-            vcDirectoryPath = pathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
+            vcDirectoryPath = PathUtilities.pathBuilder(directoryPath, Integer.toString(versionNumber));
         }
 
-        directoryUtilities.createDirectory(vcDirectoryPath);
+        DirectoryUtilities.createDirectory(vcDirectoryPath);
         return copyAllFiles(vcDirectoryPath, originalDirectoryPath, results);
     }
 
     private static List<String> copyAllFiles(String vcDirectoryPath, String originalDirectoryPath, List<String> results) {
-        List<String> allPaths = pathUtilities.getAllPathsInOneLayer(originalDirectoryPath);
+        List<String> allPaths = PathUtilities.getAllPathsInOneLayer(originalDirectoryPath);
 
         for (String path : allPaths) {
-            if (directoryUtilities.isDirectory(path)) {
-                String directoryName = pathUtilities.name(path);
-                String directoryPath = pathUtilities.pathBuilder(vcDirectoryPath, directoryName);
+            if (DirectoryUtilities.isDirectory(path)) {
+                String directoryName = PathUtilities.name(path);
+                String directoryPath = PathUtilities.pathBuilder(vcDirectoryPath, directoryName);
 
                 if (!directoryName.equals(".vc")) {
-                    directoryUtilities.createDirectory(directoryPath);
+                    DirectoryUtilities.createDirectory(directoryPath);
                     results = copyAllFiles(directoryPath, path, results);
                 }
-            } else if (fileUtilities.isFile(path)) {
-                String fileName = pathUtilities.name(path);
-                String destinationPathString = pathUtilities.pathBuilder(vcDirectoryPath, fileName);
+            } else if (FileUtilities.isFile(path)) {
+                String fileName = PathUtilities.name(path);
+                String destinationPathString = PathUtilities.pathBuilder(vcDirectoryPath, fileName);
 
                 Path sourcePath = Paths.get(path);
                 Path destinationPath = Paths.get(destinationPathString);
@@ -81,9 +81,9 @@ public class CommitManager {
         List<String> results = new ArrayList<>();
 
         // Checks the directory path to make sure it exists
-        if (directoryUtilities.isDirectory(path) && !directoryUtilities.isDirectoryUpToDate(path)) {
+        if (DirectoryUtilities.isDirectory(path) && !DirectoryUtilities.isDirectoryUpToDate(path)) {
             return commit(path);
-        } else if (!directoryUtilities.isDirectory(path)) {
+        } else if (!DirectoryUtilities.isDirectory(path)) {
             results.add(String.format("%s is not a directory", path));
         } else {
             results.add(String.format("%s is up to date", path));
