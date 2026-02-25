@@ -33,17 +33,17 @@ import java.util.List;
  * String directoryPath = "C:\\Users\\Documents\\test";
  * String filePath = "C:\\Users\\Documents\\test\\testFile.txt";
  *
- * pathUtilities.createDirectoryPathIfItDoesNotExist(filePath); // Creates the directories "C:\\Users\\Documents" and
+ * PathUtilities.createDirectoryPathIfItDoesNotExist(filePath); // Creates the directories "C:\\Users\\Documents" and
  *                                                              // "C:\\Users\\Documents\\test" if they do not exist
  *
- * List<String> allDirectoriesInFirstLayer = pathUtilities.getAllDirectoryPathsInOneLayer(directoryPath); // A
+ * List<String> allDirectoriesInFirstLayer = PathUtilities.getAllDirectoryPathsInOneLayer(directoryPath); // A
  *                                                                      // list of all directories in the first layer
  *                                                                      // of "C:\\Users\\Documents\\test"
  *
- * List<String> allFiles = pathUtilities.getAllFilePaths(directoryPath); // A list of all files
+ * List<String> allFiles = PathUtilities.getAllFilePaths(directoryPath); // A list of all files
  *                                                                       // in "C:\\Users\\Documents\\test"
  *
- * List<String> allPathsInFirstLayer = pathUtilities.getAllPathsInOneLayer(String directoryPath); // A list of
+ * List<String> allPathsInFirstLayer = PathUtilities.getAllPathsInOneLayer(String directoryPath); // A list of
  *                                                                      // all files and directories in the first layer
  *                                                                      // of "C:\\Users\\Documents\\test"
  *
@@ -55,7 +55,7 @@ import java.util.List;
  * @author Lotoya Willis
  * @version 1.0
  */
-public class pathUtilities {
+public class PathUtilities {
     /**
      * Ensures the directory path to a file exists. If any directories do not exist, they are created.
      * <p>
@@ -72,8 +72,8 @@ public class pathUtilities {
      * @see Arrays#asList(Object[])
      * @see ArrayList#remove(Object)
      * @see ArrayList#toArray(Object[])
-     * @see directoryUtilities#isDirectory(String)
-     * @see directoryUtilities#createDirectory(String)
+     * @see DirectoryUtilities#isDirectory(String)
+     * @see DirectoryUtilities#createDirectory(String)
      */
     public static void createDirectoryPathIfItDoesNotExist(String path) {
         String[] splitPath;
@@ -97,8 +97,8 @@ public class pathUtilities {
 
         for (String piece : splitPath) {
             partialPath = pathBuilder(partialPath, piece);
-            if (!directoryUtilities.isDirectory(partialPath)) {
-                directoryUtilities.createDirectory(partialPath);
+            if (!DirectoryUtilities.isDirectory(partialPath)) {
+                DirectoryUtilities.createDirectory(partialPath);
             }
         }
     }
